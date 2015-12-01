@@ -1,0 +1,26 @@
+{
+    "name": "insilicodb/pipelines-microservice-CLI",
+    "description": "InSilicoDB pipelines-microservices CLI",
+    "require": {
+        "InSilicoDB/pipelines-microservice-php-sdk": "dev-develop",
+        "symfony/console": "^3.0"
+    },
+    "authors": [
+        {
+            "name": "InSilicoDB Developers",
+            "email": "support@insilicodb.com"
+        }
+    ],
+    "require-dev": {
+         "phpunit/phpunit": "~4.0"
+    },
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@github.com:InSilicoDB/pipelines-microservice-php-sdk.git"
+        }
+    ]
+}
