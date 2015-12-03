@@ -10,6 +10,7 @@ use PipelinesMicroservice\Services\PipelineApi;
 use GuzzleHttp\Client;
 use PipelinesMicroservice\PipelinesMicroserviceApi;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class PublishPipeline extends CLICommand
 {
@@ -50,6 +51,12 @@ class PublishPipeline extends CLICommand
             );
             $question->setErrorMessage('Pipeline id %s is invalid.');
             $id = $helper->ask($input, $output, $question);
+            $questionConfirm = new ConfirmationQuestion("Are you sure to publish pipeline $id?");
+            
+            if (!$helper->ask($input, $output, $questionConfirm)) {
+                return;
+            }
+            
             $output->writeln( "Publishing pipeline $id: " );
             $output->writeln( json_encode( $api->pipelines->publish($id)) );
         }else{

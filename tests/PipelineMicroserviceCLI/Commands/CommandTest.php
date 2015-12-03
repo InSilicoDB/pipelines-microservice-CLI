@@ -16,7 +16,7 @@ class CommandTest extends CommandTestCase {
         
         // Equals to a user inputting "2" and hitting ENTER
         $helper = $command->getHelper('question');
-        $helper->setInputStream($this->getInputStream('2\\n'));
+        $helper->setInputStream($this->getInputStream("2\n y \n"));
         
         $commandTester = new CommandTester($command);
         $commandTester->execute( [
@@ -35,7 +35,7 @@ class CommandTest extends CommandTestCase {
         
         // Equals to a user inputting "2" and hitting ENTER
         $helper = $command->getHelper('question');
-        $helper->setInputStream($this->getInputStream('2\\n'));
+        $helper->setInputStream($this->getInputStream("2\n y \n"));
         
         $commandTester = new CommandTester($command);
         $commandTester->execute( [
