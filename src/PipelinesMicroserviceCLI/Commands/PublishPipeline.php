@@ -12,7 +12,7 @@ use PipelinesMicroservice\PipelinesMicroserviceApi;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
-class PublishPipeline extends CLICommand
+class PublishPipeline extends PipelineManagerAPICommand
 {
     protected function configure()
     {
@@ -46,7 +46,7 @@ class PublishPipeline extends CLICommand
             
             $helper   = $this->getHelper('question');
             $question = new ChoiceQuestion(
-                'Please the id of the pipeline you which to publish: ',
+                'Please select the id of the pipeline you which to publish: ',
                 $pipelineIds
             );
             $question->setErrorMessage('Pipeline id %s is invalid.');

@@ -12,13 +12,13 @@ use PipelinesMicroservice\PipelinesMicroserviceApi;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
-class HidePipeline extends CLICommand
+class DenyPipelineRelease extends PipelineManagerAPICommand
 {
     protected function configure()
     {
         $this
-        ->setName('pipeline:hide')
-        ->setDescription('Hide a pipeline')
+        ->setName('pipeline:deny')
+        ->setDescription('Deny a pipeline release')
         ->addArgument(
             'base_url',
             InputArgument::REQUIRED,
@@ -29,37 +29,58 @@ class HidePipeline extends CLICommand
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $baseUrl   = $input->getArgument('base_url');
-        $client    = $this->getHttpClient($baseUrl,$this->httpHandler);
-        $api       = new PipelinesMicroserviceApi($client);
-        $pipelines = $api->pipelines->getPublished();
+        $baseUrl  = $input->getArgument('base_url');
+        $client   = $this->getHttpClient($baseUrl,$this->httpHandler);
+        $api      = new PipelinesMicroserviceApi($client);
+        $publishedPipelines = $api->pipelines->getPublished();
         
-        if( !empty($pipelines) ){
+        if( !empty($publishedPipelines) ){
             $pipelineIds = [];
             $messages    = [];
-            foreach ($pipelines as $pipeline) {
-                $pipelineIds[]  = $pipeline->getId();
+            foreach ($publishedPipelines as $pipeline) {
                 $messages[]     = json_encode($pipeline,JSON_PRETTY_PRINT);
             }
             
-            $output->write($messages,true);
-            
             $helper   = $this->getHelper('question');
             $question = new ChoiceQuestion(
-                'Please the id of the pipeline you which to publish: ',
-                $pipelineIds
+                'Please select the id of the pipeline you which to deny a release of: ',
+                $messages
             );
             $question->setErrorMessage('Pipeline id %s is invalid.');
-            $id = $helper->ask($input, $output, $question);
             
-            $questionConfirm = new ConfirmationQuestion("Are you sure to hide pipeline $id?");
+            $pipelineJson = $helper->ask($input, $output, $question);
+            $idx        = array_search($pipelineJson, $messages);
+            $pipeline   = $publishedPipelines[$idx];
+            
+            $approvedReleases = $pipeline->getApprovedReleases();
+            if( empty($approvedReleases) ){
+                $output->writeln( "This pipeline has no releases to deny." );
+                return;
+            }
+            
+            $messages    = [];
+            foreach ($approvedReleases as $release) {
+                $messages[]     = $release->getName();
+            }
+            
+            $question = new ChoiceQuestion(
+                'Please select the number of the release: ',
+                $messages
+            );
+            $question->setErrorMessage('Selected number is invalid.');
+            
+            $releaseName = $helper->ask($input, $output, $question);
+            $idx     = array_search($releaseName, $messages);
+            $release = $approvedReleases[$idx];
+            
+            $questionConfirm = new ConfirmationQuestion("Are you sure to deny release $releaseName?");
             
             if (!$helper->ask($input, $output, $questionConfirm)) {
                 return;
             }
-            
-            $output->writeln( "Publishing pipeline $id: " );
-            $output->writeln( json_encode( $api->pipelines->publish($id)) );
+            $output->writeln( "" );
+            $output->writeln( "Denying release: $releaseName" );
+            $output->writeln( json_encode( $api->pipelines->denyRelease($pipeline, $release),JSON_PRETTY_PRINT) );
         }else{
             $output->writeln( "There are no pipelines available to publish." );
         }

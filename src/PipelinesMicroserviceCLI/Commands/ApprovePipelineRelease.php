@@ -12,13 +12,13 @@ use PipelinesMicroservice\PipelinesMicroserviceApi;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
-class PublishPipeline extends CLICommand
+class ApprovePipelineRelease extends PipelineManagerAPICommand
 {
     protected function configure()
     {
         $this
-        ->setName('pipeline:publish')
-        ->setDescription('Publish a pipeline')
+        ->setName('pipeline:approve')
+        ->setDescription('Approve a pipeline release')
         ->addArgument(
             'base_url',
             InputArgument::REQUIRED,
@@ -32,33 +32,58 @@ class PublishPipeline extends CLICommand
         $baseUrl  = $input->getArgument('base_url');
         $client   = $this->getHttpClient($baseUrl,$this->httpHandler);
         $api      = new PipelinesMicroserviceApi($client);
-        $pipelinesToPublish = $api->pipelines->getHidden();
+        $publishedPipelines = $api->pipelines->getPublished();
         
-        if( !empty($pipelinesToPublish) ){
+        if( !empty($publishedPipelines) ){
             $pipelineIds = [];
             $messages    = [];
-            foreach ($pipelinesToPublish as $pipeline) {
-                $pipelineIds[]  = $pipeline->getId();
+            foreach ($publishedPipelines as $pipeline) {
                 $messages[]     = json_encode($pipeline,JSON_PRETTY_PRINT);
             }
             
-            $output->write($messages,true);
-            
             $helper   = $this->getHelper('question');
             $question = new ChoiceQuestion(
-                'Please the id of the pipeline you which to publish: ',
-                $pipelineIds
+                'Please select the pipeline you wish to approve a release of: ',
+                $messages
             );
             $question->setErrorMessage('Pipeline id %s is invalid.');
-            $id = $helper->ask($input, $output, $question);
-            $questionConfirm = new ConfirmationQuestion("Are you sure to publish pipeline $id?");
+            
+            $pipelineJson = $helper->ask($input, $output, $question);
+            
+            $idx   = array_search($pipelineJson, $messages);
+            $pipeline = $publishedPipelines[$idx];
+            
+            $deniedReleases = $pipeline->getDeniedReleases();
+            if( empty($deniedReleases) ){
+                $output->writeln( "This pipeline has no releases to approve." );
+                return;
+            }
+            
+            $messages    = [];
+            foreach ($deniedReleases as $release) {
+                $messages[]     = $release->getName();
+            }
+            
+            $question = new ChoiceQuestion(
+                'Please select the number of the release: ',
+                $messages
+            );
+            $question->setErrorMessage('Selected number is invalid.');
+            $releaseName = $helper->ask($input, $output, $question);
+            
+            $idx     = array_search($releaseName, $messages);
+            $release = $deniedReleases[$idx];
+            
+            $questionConfirm = new ConfirmationQuestion("Are you sure to approve release $releaseName?");
+            
             
             if (!$helper->ask($input, $output, $questionConfirm)) {
                 return;
             }
             
-            $output->writeln( "Publishing pipeline $id: " );
-            $output->writeln( json_encode( $api->pipelines->publish($id)) );
+            $output->writeln( "" );
+            $output->writeln( "Approving release: $releaseName" );
+            $output->writeln( json_encode( $api->pipelines->approveRelease($pipeline, $release),JSON_PRETTY_PRINT) );
         }else{
             $output->writeln( "There are no pipelines available to publish." );
         }
