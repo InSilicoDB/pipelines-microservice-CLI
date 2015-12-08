@@ -4,7 +4,7 @@ namespace PipelinesMicroserviceCLI\Commands;
 use Symfony\Component\Console\Command\Command;
 use GuzzleHttp\Client;
 
-abstract class CLICommand extends Command
+abstract class PipelineManagerAPICommand extends Command
 {
     
     protected $httpHandler = null;
