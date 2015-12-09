@@ -19,8 +19,7 @@ class PublishPipeline extends PipelineManagerAPICommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $baseUrl  = $input->getArgument('base_url');
-        $client   = $this->getHttpClient($baseUrl,$this->httpHandler);
-        $api      = new PipelinesMicroserviceApi($client);
+        $api      = $this->getPipelineMicroserviceApi($baseUrl,$this->httpHandler);
         $pipelinesToPublish = $api->pipelines->getHidden();
         
         if( !empty($pipelinesToPublish) ){

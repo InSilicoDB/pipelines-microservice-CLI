@@ -19,8 +19,7 @@ class DenyPipelineRelease extends PipelineManagerAPICommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $baseUrl  = $input->getArgument('base_url');
-        $client   = $this->getHttpClient($baseUrl,$this->httpHandler);
-        $api      = new PipelinesMicroserviceApi($client);
+        $api      = $this->getPipelineMicroserviceApi($baseUrl,$this->httpHandler);
         $publishedPipelines = $api->pipelines->getPublished();
         
         if( !empty($publishedPipelines) ){

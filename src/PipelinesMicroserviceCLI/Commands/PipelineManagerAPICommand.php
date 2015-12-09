@@ -30,6 +30,11 @@ abstract class PipelineManagerAPICommand extends Command
         return new Client($config);
     }
     
+    protected function getPipelineMicroserviceApi($baseUrl,$httpHandler=null){
+        $client   = $this->getHttpClient($baseUrl,$httpHandler);
+        return new PipelinesMicroserviceApi($client);
+    }
+    
     protected function configure()
     {
         $configDirectories  = [__DIR__.'/../..'];
