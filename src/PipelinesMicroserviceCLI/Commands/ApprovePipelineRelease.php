@@ -14,18 +14,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class ApprovePipelineRelease extends PipelineManagerAPICommand
 {
-    protected function configure()
-    {
-        $this
-        ->setName('pipeline:approve')
-        ->setDescription('Approve a pipeline release')
-        ->addArgument(
-            'base_url',
-            InputArgument::REQUIRED,
-            'The location of the pipeline microservice'
-        );
-        
-    }
+    protected $commandName = 'pipeline:approve';
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {

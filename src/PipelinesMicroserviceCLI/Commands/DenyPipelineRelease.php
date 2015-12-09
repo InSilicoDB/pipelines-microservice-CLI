@@ -14,18 +14,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class DenyPipelineRelease extends PipelineManagerAPICommand
 {
-    protected function configure()
-    {
-        $this
-        ->setName('pipeline:deny')
-        ->setDescription('Deny a pipeline release')
-        ->addArgument(
-            'base_url',
-            InputArgument::REQUIRED,
-            'The location of the pipeline microservice'
-        );
-        
-    }
+    protected $commandName = 'pipeline:deny';
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {

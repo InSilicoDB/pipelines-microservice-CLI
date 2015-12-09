@@ -14,18 +14,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class HidePipeline extends PipelineManagerAPICommand
 {
-    protected function configure()
-    {
-        $this
-        ->setName('pipeline:hide')
-        ->setDescription('Hide a pipeline')
-        ->addArgument(
-            'base_url',
-            InputArgument::REQUIRED,
-            'The location of the pipeline microservice'
-        );
-        
-    }
+    protected $commandName = 'pipeline:hide';
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {

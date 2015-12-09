@@ -14,18 +14,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class PublishPipeline extends PipelineManagerAPICommand
 {
-    protected function configure()
-    {
-        $this
-        ->setName('pipeline:publish')
-        ->setDescription('Publish a pipeline')
-        ->addArgument(
-            'base_url',
-            InputArgument::REQUIRED,
-            'The location of the pipeline microservice'
-        );
-        
-    }
+    protected $commandName = 'pipeline:publish';
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
