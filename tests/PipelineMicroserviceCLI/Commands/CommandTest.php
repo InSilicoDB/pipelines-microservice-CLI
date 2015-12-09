@@ -14,16 +14,19 @@ class CommandTest extends CommandTestCase {
         
         $command       = $application->find('pipeline:publish');
         
-        // Equals to a user inputting "2" and hitting ENTER
         $helper = $command->getHelper('question');
-        $helper->setInputStream($this->getInputStream("2\n y \n"));
+        $helper->setInputStream($this->getInputStream("0\n y \n"));
         
         $commandTester = new CommandTester($command);
         $commandTester->execute( [
                 'command' => $command->getName(),
                 "base_url" => "todo"
         ] );
-        $this->assertRegExp('/.*["\']?published["\']?\s?:\s?["\']?Published["\']?.*["\']?id["\']?:1,/', $commandTester->getDisplay());
+        
+//         echo $commandTester->getDisplay();
+        
+        $this->assertRegExp('/Publishing pipeline:/', $commandTester->getDisplay());
+        $this->assertRegExp('/.*["\']?published["\']?\s?:\s?["\']?Published["\']?/', $commandTester->getDisplay());
     }
     
     public function testHidePipeline(){
@@ -33,16 +36,18 @@ class CommandTest extends CommandTestCase {
     
         $command       = $application->find('pipeline:hide');
         
-        // Equals to a user inputting "2" and hitting ENTER
         $helper = $command->getHelper('question');
-        $helper->setInputStream($this->getInputStream("2\n y \n"));
+        $helper->setInputStream($this->getInputStream("0\n y \n"));
         
         $commandTester = new CommandTester($command);
         $commandTester->execute( [
                 'command' => $command->getName(),
                 "base_url" => "todo"
         ] );
-        $this->assertRegExp('/.*["\']?published["\']?\s?:\s?["\']?Hidden["\']?.*["\']?id["\']?:1,/', $commandTester->getDisplay());
+
+//         echo $commandTester->getDisplay();
+        $this->assertRegExp('/Unpublishing pipeline:/', $commandTester->getDisplay());
+        $this->assertRegExp('/.*["\']?published["\']?\s?:\s?["\']?Hidden["\']?/', $commandTester->getDisplay());
     }
     
     public function testApprovePipelineRelease(){
@@ -83,8 +88,8 @@ class CommandTest extends CommandTestCase {
                 "base_url" => "todo"
         ] );
         
-        echo $commandTester->getDisplay();
+//         echo $commandTester->getDisplay();
         
-        $this->assertRegExp('/.*Are you sure to deny release.*Denying.*/', "".$commandTester->getDisplay(false));
+        $this->assertRegExp('/.*Are you sure to deny release.*\nDenying release.*/', "".$commandTester->getDisplay(false));
     }
 }

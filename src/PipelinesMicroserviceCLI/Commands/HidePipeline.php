@@ -35,33 +35,36 @@ class HidePipeline extends PipelineManagerAPICommand
         $pipelines = $api->pipelines->getPublished();
         
         if( !empty($pipelines) ){
-            $pipelineIds = [];
             $messages    = [];
-            foreach ($pipelines as $pipeline) {
-                $pipelineIds[]  = $pipeline->getId();
-                $messages[]     = json_encode($pipeline,JSON_PRETTY_PRINT);
+            foreach ($pipelines as $pipe) {
+                $messages[] = json_encode($pipe,JSON_PRETTY_PRINT);
+//                 $messages[] = json_encode($pipe);
             }
-            
-            $output->write($messages,true);
             
             $helper   = $this->getHelper('question');
             $question = new ChoiceQuestion(
-                'Please select the id of the pipeline you which to unpublish: ',
-                $pipelineIds
+                    'Please select the id of the pipeline you wish to unpublish: ',
+                    $messages
             );
-            $question->setErrorMessage('Pipeline id %s is invalid.');
-            $id = $helper->ask($input, $output, $question);
+            $question->setErrorMessage('Selected number %s is invalid.');
             
-            $questionConfirm = new ConfirmationQuestion("Are you sure to hide pipeline $id?");
+            $pipelineJson = $helper->ask($input, $output, $question);
+            $idx          = array_search($pipelineJson, $messages);
+            $pipeline     = $pipelines[$idx];
+            
+            $questionConfirm = new ConfirmationQuestion("Are you sure to unpublish pipeline $idx?");
             
             if (!$helper->ask($input, $output, $questionConfirm)) {
                 return;
             }
             
-            $output->writeln( "Publishing pipeline $id: " );
-            $output->writeln( json_encode( $api->pipelines->publish($id)) );
+            $output->writeln( "" );
+            $output->writeln( "Unpublishing pipeline: " );
+            $response = $api->pipelines->publish( $pipeline->getId() );
+            $output->writeln( json_encode( $response, JSON_PRETTY_PRINT) );
+//             $output->writeln( json_encode( $response) );
         }else{
-            $output->writeln( "There are no pipelines available to publish." );
+            $output->writeln( "There are no pipelines available to unpublish." );
         }
     }
 }

@@ -35,10 +35,9 @@ class ApprovePipelineRelease extends PipelineManagerAPICommand
         $publishedPipelines = $api->pipelines->getPublished();
         
         if( !empty($publishedPipelines) ){
-            $pipelineIds = [];
             $messages    = [];
             foreach ($publishedPipelines as $pipeline) {
-                $messages[]     = json_encode($pipeline,JSON_PRETTY_PRINT);
+                $messages[] = json_encode($pipeline,JSON_PRETTY_PRINT);
             }
             
             $helper   = $this->getHelper('question');
@@ -49,9 +48,8 @@ class ApprovePipelineRelease extends PipelineManagerAPICommand
             $question->setErrorMessage('Pipeline id %s is invalid.');
             
             $pipelineJson = $helper->ask($input, $output, $question);
-            
-            $idx   = array_search($pipelineJson, $messages);
-            $pipeline = $publishedPipelines[$idx];
+            $idx          = array_search($pipelineJson, $messages);
+            $pipeline     = $publishedPipelines[$idx];
             
             $deniedReleases = $pipeline->getDeniedReleases();
             if( empty($deniedReleases) ){
@@ -60,8 +58,8 @@ class ApprovePipelineRelease extends PipelineManagerAPICommand
             }
             
             $messages    = [];
-            foreach ($deniedReleases as $release) {
-                $messages[]     = $release->getName();
+            foreach ($deniedReleases as $rel) {
+                $messages[] = $rel->getName();
             }
             
             $question = new ChoiceQuestion(
@@ -69,10 +67,10 @@ class ApprovePipelineRelease extends PipelineManagerAPICommand
                 $messages
             );
             $question->setErrorMessage('Selected number is invalid.');
-            $releaseName = $helper->ask($input, $output, $question);
             
-            $idx     = array_search($releaseName, $messages);
-            $release = $deniedReleases[$idx];
+            $releaseName = $helper->ask($input, $output, $question);
+            $releaseIdx  = array_search($releaseName, $messages);
+            $release     = $deniedReleases[$releaseIdx];
             
             $questionConfirm = new ConfirmationQuestion("Are you sure to approve release $releaseName?");
             
@@ -83,7 +81,8 @@ class ApprovePipelineRelease extends PipelineManagerAPICommand
             
             $output->writeln( "" );
             $output->writeln( "Approving release: $releaseName" );
-            $output->writeln( json_encode( $api->pipelines->approveRelease($pipeline, $release),JSON_PRETTY_PRINT) );
+            $response = $api->pipelines->approveRelease($pipeline, $release);
+            $output->writeln( json_encode( $response, JSON_PRETTY_PRINT) );
         }else{
             $output->writeln( "There are no pipelines available to publish." );
         }
