@@ -8,76 +8,45 @@ use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
+use PipelinesMicroservice\PipelinesMicroserviceApi;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 abstract class PipelineManagerAPICommand extends Command
 {
+    private $appConfiguration;
     
-    protected $httpHandler = null;
-    protected $commandName = null;
+    private $api;
     
-    public function __construct($name = null, $httpHandler=null)
+    public function __construct(array $appConfiguration, $httpHandler) 
     {
-        parent::__construct($name);
-        $this->httpHandler = $httpHandler;
+        parent::__construct();
+        $this->appConfiguration = $appConfiguration;
+        $this->api = new PipelinesMicroserviceApi($this->createHttpClient($httpHandler));
     }
     
-    protected function getHttpClient($baseUrl,$httpHandler=null)
+    private function createHttpClient($httpHandler)
     {
-        $config = ["base_url"=>$baseUrl];
+        $config = ['base_url' => $this->appConfiguration['base_url']];
         if ($httpHandler){
             $config['handler'] = $httpHandler;
         }
+        
         return new Client($config);
     }
     
-    protected function getPipelineMicroserviceApi($baseUrl,$httpHandler=null){
-        $client   = $this->getHttpClient($baseUrl,$httpHandler);
-        return new PipelinesMicroserviceApi($client);
+    protected function getPipelineMicroserviceApi()
+    {
+        return $this->api;
     }
     
-    protected function configure()
+    protected function askConfirmChoice($input, $output, $questionString = "Are you sure?")
     {
-        $configDirectories  = [__DIR__.'/../..'];
-        $locator            = new FileLocator($configDirectories);
-        $yamlCommandFile    = $locator->locate('PipelineManagerAPICommand.yml');
-        $configArray        = Yaml::parse($yamlCommandFile);
-        $commandConfigArr   = $configArray["commands"][$this->commandName];
-        
-        $this
-            ->setName($this->commandName)
-            ->setDescription($commandConfigArr["description"]);
-        
-        if( isset($commandConfigArr["arguments"]) ){
-            $this->addArguments($commandConfigArr["arguments"]);
+        $confirmed = true;
+        $helper = $this->getHelper('question');
+        $questionConfirm = new ConfirmationQuestion($questionString);
+        if ( !$helper->ask($input, $output, $questionConfirm) ) {
+            $confirmed = false;
         }
+        return $confirmed;
     }
-    
-    protected function addArguments(array $argurmentsConfig)
-    {
-        foreach ($argurmentsConfig as $argument=>$argumentConfig) {
-            $mode = $argumentConfig["mode"];
-            switch ($mode) {
-                case "required":
-                    $mode = InputArgument::REQUIRED;
-                    break;
-                case "optional":
-                    $mode = InputArgument::OPTIONAL;
-                    break;
-                case "array":
-                    $mode = InputArgument::IS_ARRAY;
-                    break;
-                default:
-                    throw new InvalidArgumentException("Invalid argurment mode $mode");
-                    break;
-            }
-        
-            $this->addArgument(
-                    $argument,
-                    $mode,
-                    $argumentConfig["description"],
-                    isset($argumentConfig["default"])?$argumentConfig["default"]:null
-            );
-        }
-    }
-   
 }

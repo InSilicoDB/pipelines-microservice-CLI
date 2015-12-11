@@ -11,39 +11,31 @@ use GuzzleHttp\Client;
 use PipelinesMicroservice\PipelinesMicroserviceApi;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use PipelinesMicroserviceCLI\Commands\Traits\PipelineChooser;
 
 class PublishPipeline extends PipelineManagerAPICommand
 {
-    protected $commandName = 'pipeline:publish';
+    use PipelineChooser;
+    
+    protected function configure()
+    {
+        $this
+            ->setName('pipeline:publish')
+            ->setDescription('Publish a hidden pipeline');
+    }
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $baseUrl  = $input->getArgument('base_url');
-        $api      = $this->getPipelineMicroserviceApi($baseUrl,$this->httpHandler);
+        $api = $this->getPipelineMicroserviceApi();
         $pipelinesToPublish = $api->pipelines->getHidden();
         
         if( !empty($pipelinesToPublish) ){
-            $messages = [];
-            foreach ($pipelinesToPublish as $pipe) {
-                $messages[] = json_encode($pipe,JSON_PRETTY_PRINT);
-            }
+            $pipeline = $this->askChoosePipeline($pipelinesToPublish, $input, $output, 'Please select the id of the pipeline you which to publish: ');
             
-            $helper   = $this->getHelper('question');
-            $question = new ChoiceQuestion(
-                    'Please select the id of the pipeline you which to publish: ',
-                    $messages
-            );
-            $question->setErrorMessage('Selected number %s is invalid.');
-            
-            $pipelineJson = $helper->ask($input, $output, $question);
-            $idx          = array_search($pipelineJson, $messages);
-            $pipeline     = $pipelinesToPublish[$idx];
-            
-            $questionConfirm = new ConfirmationQuestion("Are you sure to publish pipeline $idx?");
-            
-            if (!$helper->ask($input, $output, $questionConfirm)) {
+            if ( !$this->askConfirmChoice($input, $output, "Are you sure to publish the pipeline?") ) {
                 return;
             }
+            
             $output->writeln( "" );
             $output->writeln( "Publishing pipeline: " );
             $response = $api->pipelines->publish( $pipeline->getId() );

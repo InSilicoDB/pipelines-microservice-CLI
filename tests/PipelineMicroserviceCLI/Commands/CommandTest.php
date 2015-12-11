@@ -1,95 +1,51 @@
 <?php
-
 namespace PipelinesMicroserviceCLI\Commands;
 
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Tester\CommandTester;
-
-class CommandTest extends CommandTestCase {
-    
-    public function testPublishPipeline(){
-        $mockHandler = $this->getHttpMockHandler(["HiddenPipelines.txt", "PublishedPipeline.txt"]);
-        $application = new Application();
-        $application->add(new PublishPipeline(null,$mockHandler));
+class CommandTest extends CommandTestCase
+{
+    public function testPublishPipeline()
+    {
+        $commandOutput = $this->execute(
+            'pipeline:publish',
+            ["HiddenPipelines.txt", "PublishedPipeline.txt"],
+            "0\n y \n"
+        );
         
-        $command       = $application->find('pipeline:publish');
-        
-        $helper = $command->getHelper('question');
-        $helper->setInputStream($this->getInputStream("0\n y \n"));
-        
-        $commandTester = new CommandTester($command);
-        $commandTester->execute( [
-                'command' => $command->getName(),
-                "base_url" => "todo"
-        ] );
-        
-//         echo $commandTester->getDisplay();
-        
-        $this->assertRegExp('/Publishing pipeline:/', $commandTester->getDisplay());
-        $this->assertRegExp('/.*["\']?published["\']?\s?:\s?["\']?Published["\']?/', $commandTester->getDisplay());
+        $this->stringShouldMatchPattern($commandOutput, '/Publishing pipeline:/');
+        $this->stringShouldMatchPattern($commandOutput, '/.*["\']?published["\']?\s?:\s?["\']?Published["\']?/');
     }
     
-    public function testHidePipeline(){
-        $mockHandler = $this->getHttpMockHandler(["PublicPipelines.txt", "PipelineToPublish.txt"]);
-        $application = new Application();
-        $application->add(new HidePipeline(null,$mockHandler));
-    
-        $command       = $application->find('pipeline:hide');
+    public function testHidePipeline()
+    {
+        $commandOutput = $this->execute(
+            'pipeline:hide',
+            ["PublicPipelines.txt", "PipelineToPublish.txt"],
+            "0\n y \n"
+        );
         
-        $helper = $command->getHelper('question');
-        $helper->setInputStream($this->getInputStream("0\n y \n"));
-        
-        $commandTester = new CommandTester($command);
-        $commandTester->execute( [
-                'command' => $command->getName(),
-                "base_url" => "todo"
-        ] );
-
-//         echo $commandTester->getDisplay();
-        $this->assertRegExp('/Unpublishing pipeline:/', $commandTester->getDisplay());
-        $this->assertRegExp('/.*["\']?published["\']?\s?:\s?["\']?Hidden["\']?/', $commandTester->getDisplay());
+        $this->stringShouldMatchPattern($commandOutput, '/Unpublishing pipeline:/');
+        $this->stringShouldMatchPattern($commandOutput, '/.*["\']?published["\']?\s?:\s?["\']?Hidden["\']?/');
     }
     
-    public function testApprovePipelineRelease(){
-        $mockHandler = $this->getHttpMockHandler(["PublicPipelines.txt", "PipelineReleaseApproved.txt"]);
-        $application = new Application();
-        $application->add(new ApprovePipelineRelease(null,$mockHandler));
-    
-        $command       = $application->find('pipeline:approve');
-    
-        // Equals to a user inputting "2" and hitting ENTER
-        $helper = $command->getHelper('question');
-        $helper->setInputStream($this->getInputStream("0\n 0 \n y \n"));
-    
-        $commandTester = new CommandTester($command);
-        $commandTester->execute( [
-                'command' => $command->getName(),
-                "base_url" => "todo"
-        ] );
-//         echo $commandTester->getDisplay();
+    public function testApprovePipelineRelease()
+    {
+        $commandOutput = $this->execute(
+            'pipeline:approve',
+            ["PublicPipelines.txt", "PipelineReleaseApproved.txt"],
+            "0\n 0 \n y \n"
+        );
         
-        $this->assertRegExp('/.*Are you sure to approve release.*/', $commandTester->getDisplay());
+        $this->stringShouldMatchPattern($commandOutput, '/.*Are you sure to approve release.*/');
     }
     
-    public function testDenyPipelineRelease(){
-        $mockHandler = $this->getHttpMockHandler(["PublicPipelines.txt", "PipelineReleaseDenied.txt"]);
-        $application = new Application();
-        $application->add(new DenyPipelineRelease(null,$mockHandler));
-    
-        $command       = $application->find('pipeline:deny');
-    
-        // Equals to a user inputting "2" and hitting ENTER
-        $helper = $command->getHelper('question');
-        $helper->setInputStream($this->getInputStream("0\n 2 \n y \n"));
-    
-        $commandTester = new CommandTester($command);
-        $commandTester->execute( [
-                'command' => $command->getName(),
-                "base_url" => "todo"
-        ] );
+    public function testDenyPipelineRelease()
+    {
+        $commandOutput = $this->execute(
+            'pipeline:deny',
+            ["PublicPipelines.txt", "PipelineReleaseDenied.txt"],
+            "0\n 2 \n y \n"
+        );
         
-//         echo $commandTester->getDisplay();
-        
-        $this->assertRegExp('/.*Are you sure to deny release.*\nDenying release.*/', "".$commandTester->getDisplay(false));
+        $this->stringShouldMatchPattern($commandOutput, '/.*Are you sure to deny release.*\nDenying release.*/');
     }
 }

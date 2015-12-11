@@ -11,62 +11,42 @@ use GuzzleHttp\Client;
 use PipelinesMicroservice\PipelinesMicroserviceApi;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use PipelinesMicroserviceCLI\Commands\Traits\PipelineChooser;
+use PipelinesMicroserviceCLI\Commands\Traits\ReleaseChooser;
 
 class DenyPipelineRelease extends PipelineManagerAPICommand
 {
-    protected $commandName = 'pipeline:deny';
+    use PipelineChooser;
+    use ReleaseChooser;
+    
+    protected function configure()
+    {
+        $this
+            ->setName('pipeline:deny')
+            ->setDescription('Deny a pipeline release');
+    }
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $baseUrl  = $input->getArgument('base_url');
-        $api      = $this->getPipelineMicroserviceApi($baseUrl,$this->httpHandler);
+        $api = $this->getPipelineMicroserviceApi();
         $publishedPipelines = $api->pipelines->getPublished();
         
         if( !empty($publishedPipelines) ){
-            $messages    = [];
-            foreach ($publishedPipelines as $pipeline) {
-                $messages[]     = json_encode($pipeline,JSON_PRETTY_PRINT);
-            }
-            
-            $helper   = $this->getHelper('question');
-            $question = new ChoiceQuestion(
-                'Please select the pipeline you wish to deny a release of: ',
-                $messages
-            );
-            $question->setErrorMessage('Selected number %s is invalid.');
-            
-            $pipelineJson = $helper->ask($input, $output, $question);
-            $idx          = array_search($pipelineJson, $messages);
-            $pipeline     = $publishedPipelines[$idx];
+            $pipeline = $this->askChoosePipeline($publishedPipelines, $input, $output, 'Please select the pipeline you wish to deny a release of: ');
             
             $approvedReleases = $pipeline->getApprovedReleases();
             if( empty($approvedReleases) ){
                 $output->writeln( "This pipeline has no releases to deny." );
                 return;
             }
+            $release = $this->askChooseRelease($approvedReleases, $input, $output);
             
-            $messages    = [];
-            foreach ($approvedReleases as $rel) {
-                $messages[]     = $rel->getName();
-            }
-            
-            $question = new ChoiceQuestion(
-                'Please select the number of the release: ',
-                $messages
-            );
-            $question->setErrorMessage('Selected number %s is invalid.');
-            
-            $releaseName = $helper->ask($input, $output, $question);
-            $releasIdx   = array_search($releaseName, $messages);
-            $release     = $approvedReleases[$releasIdx];
-            
-            $questionConfirm = new ConfirmationQuestion("Are you sure to deny release $releaseName?");
-            
-            if (!$helper->ask($input, $output, $questionConfirm)) {
+            if ( !$this->askConfirmChoice($input, $output, "Are you sure to deny release ".$release->getName()."?") ) {
                 return;
             }
+            
             $output->writeln( "" );
-            $output->writeln( "Denying release: $releaseName" );
+            $output->writeln( "Denying release: ".$release->getName() );
             $response = $api->pipelines->denyRelease($pipeline, $release);
             $output->writeln( json_encode( $response, JSON_PRETTY_PRINT) );
         }else{
