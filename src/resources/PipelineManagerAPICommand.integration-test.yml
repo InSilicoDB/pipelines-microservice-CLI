@@ -1,0 +1,9 @@
+
+base_uri: http://localhost:8080/
+
+db:
+    name: pipelines-microservice-local
+    port: 5000
+    password: pipelinesmicroservice
+    user: root
+    host: insilicodb

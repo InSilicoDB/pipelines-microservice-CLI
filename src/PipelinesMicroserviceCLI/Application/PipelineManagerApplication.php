@@ -45,7 +45,7 @@ class PipelineManagerApplication extends Application
     
     private function loadConfiguration()
     {
-        $configDirectories = [__DIR__.'/../..'];
+        $configDirectories = [__DIR__.'/../../resources/'];
         $configurationLocator = new FileLocator($configDirectories);
         $configurationFile = $configurationLocator->locate(
             'PipelineManagerAPICommand.' . $this->environment . '.yml'

@@ -38,7 +38,7 @@ class HidePipeline extends PipelineManagerAPICommand
             
             $output->writeln( "" );
             $output->writeln( "Unpublishing pipeline: " );
-            $response = $api->pipelines->publish( $pipeline->getId() );
+            $response = $api->pipelines->hide( $pipeline->getId() );
             $output->writeln( json_encode( $response, JSON_PRETTY_PRINT) );
         }else{
             $output->writeln( "There are no pipelines available to unpublish." );

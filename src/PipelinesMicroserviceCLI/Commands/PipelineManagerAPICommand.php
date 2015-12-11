@@ -26,7 +26,7 @@ abstract class PipelineManagerAPICommand extends Command
     
     private function createHttpClient($httpHandler)
     {
-        $config = ['base_url' => $this->appConfiguration['base_url']];
+        $config = ['base_uri' => $this->appConfiguration['base_uri']];
         if ($httpHandler){
             $config['handler'] = $httpHandler;
         }
