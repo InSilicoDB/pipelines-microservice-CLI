@@ -5,7 +5,10 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 
 trait PipelineChooser
 {
-    protected function askChoosePipeline($pipelines, $input, $output, $questionString = "Please select a pipeline: "){
+    use Chooser;
+    
+    protected function askChoosePipeline($pipelines, $input, $output, $questionString = "Please select a pipeline: ")
+    {
         $pipelineJsons = [];
         foreach ($pipelines as $pipeline) {
             $pipelineJsons[] = json_encode($pipeline,JSON_PRETTY_PRINT);
@@ -21,6 +24,7 @@ trait PipelineChooser
         $pipelineJson = $helper->ask($input, $output, $question);
         $pipelineIndex = array_search($pipelineJson, $pipelineJsons);
         $pipeline = $pipelines[$pipelineIndex];
+        
         return $pipeline;
     }
 }

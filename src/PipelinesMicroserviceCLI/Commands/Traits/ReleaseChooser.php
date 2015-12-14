@@ -5,7 +5,10 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 
 trait ReleaseChooser
 {
-    private function askChooseRelease($releases, $input, $output){
+    use Chooser;
+    
+    private function askChooseRelease($releases, $input, $output)
+    {
         $releseNames = [];
         foreach ($releases as $rel) {
             $releseNames[] = $rel->getName();
@@ -21,6 +24,7 @@ trait ReleaseChooser
         $releaseName = $helper->ask($input, $output, $question);
         $releaseIndex = array_search($releaseName, $releseNames);
         $release = $releases[$releaseIndex];
+        
         return $release;
     }
 }

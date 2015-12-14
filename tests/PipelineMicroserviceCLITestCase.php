@@ -44,10 +44,12 @@ abstract class PipelineMicroserviceCLITestCase extends \PHPUnit_Framework_TestCa
             $arguments["command"] = $commandName;
         }
         $commandTester->execute($arguments);
+        
         return $commandTester->getDisplay();
     }
 
-    protected function getHttpMockHandler( $mockReponsePaths ){
+    protected function getHttpMockHandler( $mockReponsePaths )
+    {
         $responses = [];
         foreach ($mockReponsePaths as $mockReponsePath) {
             $mockFile = __DIR__."/functional/mock/".$mockReponsePath;
@@ -59,6 +61,7 @@ abstract class PipelineMicroserviceCLITestCase extends \PHPUnit_Framework_TestCa
         // Create a mock and queue responses.
         $mock           = new MockHandler($responses);
         $handler        = HandlerStack::create($mock);
+        
         return $handler;
     }
 
