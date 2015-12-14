@@ -1,7 +1,5 @@
 <?php
 
-namespace PipelinesMicroserviceCLI\Commands;
-
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -9,46 +7,51 @@ use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use PipelinesMicroserviceCLI\Application\PipelineManagerApplication;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class CommandTestCase extends \PHPUnit_Framework_TestCase
+abstract class PipelineMicroserviceCLITestCase extends \PHPUnit_Framework_TestCase
 {
+
+    protected $env = "test";
     
     /**
-     * 
+     *
      * @param String $commandName
      * @param array $mockReponsePaths
      * @param String $answers
      * @return CommandTester
      */
     protected function createTesterWithCommandNameAndMockDataAndAnswers(
-        $commandName,
-        array $mockReponsePaths,
-        $answers
+            $commandName,
+            $answers,
+            array $mockReponsePaths = null
     ) {
-        $mockHandler = $this->getHttpMockHandler($mockReponsePaths);
-        $application = new PipelineManagerApplication('test', $mockHandler);
-        
+        $mockHandler = null;
+        if ( $mockReponsePaths ) {
+            $mockHandler = $this->getHttpMockHandler($mockReponsePaths);
+        }
+        $application = new PipelineManagerApplication($this->env, $mockHandler);
+
         $command = $application->find($commandName);
-        
+
         $helper = $command->getHelper('question');
         $helper->setInputStream($this->getInputStream($answers));
-        
+
         return new CommandTester($command);
     }
-    
-    protected function execute($commandName, array $mockReponsePaths, $answers, array $arguments = [] )
+
+    protected function execute($commandName, $answers, array $arguments = [], array $mockReponsePaths = null)
     {
-        $commandTester = $this->createTesterWithCommandNameAndMockDataAndAnswers($commandName, $mockReponsePaths, $answers);
+        $commandTester = $this->createTesterWithCommandNameAndMockDataAndAnswers($commandName, $answers, $mockReponsePaths);
         if ( !isset($arguments["command"]) ) {
             $arguments["command"] = $commandName;
         }
         $commandTester->execute($arguments);
         return $commandTester->getDisplay();
     }
-    
+
     protected function getHttpMockHandler( $mockReponsePaths ){
         $responses = [];
         foreach ($mockReponsePaths as $mockReponsePath) {
-            $mockFile = __DIR__."/../../mock/".$mockReponsePath;
+            $mockFile = __DIR__."/functional/mock/".$mockReponsePath;
             if ( !file_exists($mockFile) ) {
                 throw new InvalidArgumentException('Unable to open mock file: ' . $mockFile);
             }
@@ -59,16 +62,16 @@ class CommandTestCase extends \PHPUnit_Framework_TestCase
         $handler        = HandlerStack::create($mock);
         return $handler;
     }
-    
+
     protected function getInputStream($input)
     {
         $stream = fopen('php://memory', 'r+', false);
         fputs($stream, $input);
         rewind($stream);
-    
+
         return $stream;
     }
-    
+
     public function stringShouldMatchPattern($string,$pattern)
     {
         return $this->assertRegExp($pattern, $string);

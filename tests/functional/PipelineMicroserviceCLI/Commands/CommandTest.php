@@ -1,14 +1,15 @@
 <?php
 namespace PipelinesMicroserviceCLI\Commands;
 
-class CommandTest extends CommandTestCase
+class CommandTest extends \PipelineMicroserviceCLITestCase
 {
     public function testPublishPipeline()
     {
         $commandOutput = $this->execute(
             'pipeline:publish',
-            ["HiddenPipelines.txt", "PublishedPipeline.txt"],
-            "0\n y \n"
+            "0\n y \n",
+            [],
+            ["HiddenPipelines.txt", "PublishedPipeline.txt"]
         );
         
         $this->stringShouldMatchPattern($commandOutput, '/Publishing pipeline:/');
@@ -19,8 +20,9 @@ class CommandTest extends CommandTestCase
     {
         $commandOutput = $this->execute(
             'pipeline:hide',
-            ["PublicPipelines.txt", "PipelineToPublish.txt"],
-            "0\n y \n"
+            "0\n y \n",
+            [],
+            ["PublicPipelines.txt", "PipelineToPublish.txt"]
         );
         
         $this->stringShouldMatchPattern($commandOutput, '/Unpublishing pipeline:/');
@@ -31,8 +33,9 @@ class CommandTest extends CommandTestCase
     {
         $commandOutput = $this->execute(
             'pipeline:approve',
-            ["PublicPipelines.txt", "PipelineReleaseApproved.txt"],
-            "0\n 0 \n y \n"
+            "0\n 0 \n y \n",
+            [],
+            ["PublicPipelines.txt", "PipelineReleaseApproved.txt"]
         );
         
         $this->stringShouldMatchPattern($commandOutput, '/.*Are you sure to approve release.*/');
@@ -42,8 +45,9 @@ class CommandTest extends CommandTestCase
     {
         $commandOutput = $this->execute(
             'pipeline:deny',
-            ["PublicPipelines.txt", "PipelineReleaseDenied.txt"],
-            "0\n 2 \n y \n"
+            "0\n 2 \n y \n",
+            [],
+            ["PublicPipelines.txt", "PipelineReleaseDenied.txt"]
         );
         
         $this->stringShouldMatchPattern($commandOutput, '/.*Are you sure to deny release.*\nDenying release.*/');
