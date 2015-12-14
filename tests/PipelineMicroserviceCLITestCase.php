@@ -9,7 +9,6 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 abstract class PipelineMicroserviceCLITestCase extends \PHPUnit_Framework_TestCase
 {
-
     protected $env = "test";
     
     /**
