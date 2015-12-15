@@ -17,5 +17,5 @@ From the root of the project just type `phpunit` and the tests will run.
 ### Running the integration tests
 
 1. Make sure you have a running pipelines-microservice, to have one see [pipelines-microservice](https://github.com/InSilicoDB/pipelines-microservice)
-2. Change the `base_uri` property in the file `PipelineManagerAPICommand.integration-test.yml` to the uri of the pipelines-microservice you setup in step one.
+2. Change the `base_uri` property in the file `src/resources/PipelineManagerAPICommand.integration-test.yml` to the uri of the pipelines-microservice you setup in step one.
 3. Execute from the root folder `phpunit -c phpunit.integration.xml`
