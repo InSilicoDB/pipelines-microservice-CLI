@@ -11,19 +11,24 @@ trait ReleaseChooser
     {
         $releseNames = [];
         foreach ($releases as $rel) {
-            $releseNames[] = $rel->getName();
+            $releseNames[$rel->getName()] = "Release ".$rel->getName();
         }
         
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion(
-            'Please select the number of the release: ',
+            'Please select the release reference: ',
             $releseNames
         );
-        $question->setErrorMessage('Selected number is invalid.');
+        $question->setErrorMessage('Selected reference is invalid.');
         
         $releaseName = $helper->ask($input, $output, $question);
-        $releaseIndex = array_search($releaseName, $releseNames);
-        $release = $releases[$releaseIndex];
+        $release = null;
+        foreach ($releases as $item) {
+            if( $item->getName()==$releaseName ){
+                $release = $item;
+                break;
+            }
+        }
         
         return $release;
     }

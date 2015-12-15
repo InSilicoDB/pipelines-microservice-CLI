@@ -9,21 +9,27 @@ trait PipelineChooser
     
     protected function askChoosePipeline($pipelines, $input, $output, $questionString = "Please select a pipeline: ")
     {
-        $pipelineJsons = [];
+        $pipelineResources = [];
         foreach ($pipelines as $pipeline) {
-            $pipelineJsons[] = json_encode($pipeline,JSON_PRETTY_PRINT);
+            $pipelineResources[$pipeline->getId()] = "Pipeline id: ".$pipeline->getId()." on ".$pipeline->getSource()->getResource();
         }
     
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion(
-                $questionString,
-                $pipelineJsons
+            $questionString,
+            $pipelineResources
         );
-        $question->setErrorMessage('Selected number %s is invalid.');
+        $question->setErrorMessage('Selected id %s is invalid.');
     
-        $pipelineJson = $helper->ask($input, $output, $question);
-        $pipelineIndex = array_search($pipelineJson, $pipelineJsons);
-        $pipeline = $pipelines[$pipelineIndex];
+        $pipelineResource = $helper->ask($input, $output, $question);
+        $pipelineId = array_search($pipelineResource, $pipelineResources);
+        $pipeline = null;
+        foreach ($pipelines as $item) {
+            if( $item->getId()==$pipelineId ){
+                $pipeline = $item;
+                break;
+            }
+        }
         
         return $pipeline;
     }

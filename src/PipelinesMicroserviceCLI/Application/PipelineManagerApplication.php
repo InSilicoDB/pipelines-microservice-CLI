@@ -50,7 +50,7 @@ class PipelineManagerApplication extends Application
         $configurationFile = $configurationLocator->locate(
             'PipelineManagerAPICommand.' . $this->environment . '.yml'
         );
-        $this->configuration = Yaml::parse($configurationFile);
+        $this->configuration = Yaml::parse( file_get_contents($configurationFile) );
     }
     
     protected function getConfiguration()
