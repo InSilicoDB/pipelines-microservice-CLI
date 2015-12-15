@@ -20,6 +20,7 @@ trait ReleaseChooser
             $releseNames
         );
         $question->setErrorMessage('Selected reference is invalid.');
+        $question->setMaxAttempts(3);
         
         $releaseName = $helper->ask($input, $output, $question);
         $release = null;

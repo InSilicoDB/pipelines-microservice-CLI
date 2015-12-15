@@ -20,6 +20,7 @@ trait PipelineChooser
             $pipelineResources
         );
         $question->setErrorMessage('Selected id %s is invalid.');
+        $question->setMaxAttempts(3);
     
         $pipelineResource = $helper->ask($input, $output, $question);
         $pipelineId = array_search($pipelineResource, $pipelineResources);

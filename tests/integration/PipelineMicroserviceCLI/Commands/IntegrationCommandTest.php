@@ -61,6 +61,8 @@ class IntegrationCommandTest extends \PipelineMicroserviceCLITestCase
         
         $this->stringShouldMatchPattern($commandOutput, "/.*Are you sure to approve release $releaseName?/");
         $this->stringShouldMatchPattern($commandOutput, "/.*Approving release: $releaseName\n.*/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?id[\"']?\s?:\s?[\"']?".$pipelineId."[\"']?/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?name[\"']?\s?:\s?[\"']?".$releaseName."[\"']?,[\\n\\r]*\s*[\"']?executePermission[\"']?\s?:\s?[\"']?Approved[\"']?/");
     }
     
     public function testCanDenyAPipelineRelease()
@@ -78,6 +80,7 @@ class IntegrationCommandTest extends \PipelineMicroserviceCLITestCase
         
         $this->stringShouldMatchPattern($commandOutput, "/.*Are you sure to deny release .*?\nDenying release.*/");
         $this->stringShouldMatchPattern($commandOutput, "/.*Denying release: $releaseName\n.*/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?id[\"']?\s?:\s?[\"']?".$pipelineId."[\"']?/");
     }
     
     protected function givenThereIsAPipeline()
