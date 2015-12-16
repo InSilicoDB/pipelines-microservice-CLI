@@ -18,7 +18,7 @@ class IntegrationCommandTest extends \PipelineMicroserviceCLITestCase
     
     public function setUp()
     {
-        if( empty($this->configurationArray) ){
+        if ( empty($this->configurationArray) ) {
             $this->configurationArray = Yaml::parse(file_get_contents(TEST_DIR."/../../src/resources/PipelineManagerAPICommand.integration-test.yml"));
         }
         $this->api = $this->createApi();
@@ -98,8 +98,8 @@ class IntegrationCommandTest extends \PipelineMicroserviceCLITestCase
         $timeout = 10;
         $time = 0;
         $timeStart = microtime(true);
-        while ( empty($pipeline->getDeniedReleases()) ){
-            if( $time >= $timeout ){
+        while ( empty($pipeline->getReleases()) ){
+            if ( $time >= $timeout ) {
                 throw new \Exception("Timeout of $timeout seconds is passed to fetch releases");
                 break;
             }
