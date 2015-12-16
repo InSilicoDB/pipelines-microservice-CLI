@@ -10,6 +10,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
 use PipelinesMicroserviceCLI\Commands\Job;
 use PipelinesMicroserviceCLI\Commands\GetJobById;
+use PipelinesMicroserviceCLI\Commands\FindJobById;
 
 class PipelineManagerApplication extends Application
 {
@@ -34,7 +35,7 @@ class PipelineManagerApplication extends Application
         $this->addCommandWithName(HidePipeline::class);
         $this->addCommandWithName(PublishPipeline::class);
         $this->addCommandWithName(Job::class);
-        $this->addCommandWithName(GetJobById::class);
+        $this->addCommandWithName(FindJobById::class);
     }
     
     public function addCommandWithName($commandName)

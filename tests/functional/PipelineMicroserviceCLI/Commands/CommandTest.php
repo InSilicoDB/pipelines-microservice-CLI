@@ -53,7 +53,7 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
         $this->stringShouldMatchPattern($commandOutput, '/.*Are you sure to deny release.*\nDenying release.*/');
     }
     
-    public function testCanGetAJobById()
+    public function testCanFindAJobById()
     {
         $jobId = 1;
         $commandOutput = $this->execute(

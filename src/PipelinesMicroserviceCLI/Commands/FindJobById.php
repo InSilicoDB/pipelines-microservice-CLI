@@ -14,7 +14,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use PipelinesMicroserviceCLI\Commands\Traits\PipelineChooser;
 use Symfony\Component\Console\Question\Question;
 
-class GetJobById extends PipelineManagerAPICommand
+class FindJobById extends PipelineManagerAPICommand
 {
     protected function configure()
     {
