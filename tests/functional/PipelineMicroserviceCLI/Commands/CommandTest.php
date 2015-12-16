@@ -1,6 +1,8 @@
 <?php
 namespace PipelinesMicroserviceCLI\Commands;
 
+use PipelinesMicroservice\Entities\Job;
+
 class CommandTest extends \PipelineMicroserviceCLITestCase
 {
     public function testCanPublishAPipeline()
@@ -67,4 +69,46 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?author[\"']?\s?:\s?[\"']?".$authorId."[\"']?,.*/");
         $this->stringShouldMatchPattern($commandOutput, '/.*["\']?published["\']?\s?:\s?["\']?Hidden["\']?,.*/');
     }
+    
+    public function testCanFindAJobById()
+    {
+        $jobId = 1;
+        $commandOutput = $this->execute(
+            'job:id',
+            $jobId,
+            [],
+            ["JobSingle.txt"]
+        );
+    
+        $this->stringShouldMatchPattern($commandOutput, '/.*Please enter the id of the job.*/');
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?id[\"']?\s?:\s?[\"']?".$jobId."[\"']?/");
+    }
+    
+    public function testCanFindAJobsByUserId()
+    {
+        $userId = 1;
+        $commandOutput = $this->execute(
+            'job:user',
+            $userId,
+            [],
+            ["JobWithStatusRunning.txt"]
+        );
+    
+        $this->stringShouldMatchPattern($commandOutput, '/.*Please enter the id of the user you want to filter on.*/');
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?user[\"']?\s?:\s?[\"']?".$userId."[\"']?/");
+    }
+    
+    public function testCanFindJobsByStatus()
+    {
+        $commandOutput = $this->execute(
+            'job:status',
+            Job::STATUS_RUNNING,
+            [],
+            ["JobWithStatusRunning.txt"]
+        );
+    
+        $this->stringShouldMatchPattern($commandOutput, '/.*Please choose the status you want to filter on.*/');
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?status[\"']?\s?:\s?[\"']?running[\"']?/");
+    }
+    
 }

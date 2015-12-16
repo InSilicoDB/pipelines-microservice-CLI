@@ -27,24 +27,22 @@ class IntegrationCommandTest extends \PipelineMicroserviceCLITestCase
     public function testCanPublishAPipeline()
     {
         $pipeline = $this->givenThereIsAPipeline();
-        $pipelineId = $pipeline->getId();
-        $commandOutput = $this->execute('pipeline:publish', "$pipelineId\n y \n");
+        $commandOutput = $this->execute('pipeline:publish', $pipeline->getId()."\n y \n");
         
         $this->stringShouldMatchPattern($commandOutput, '/Publishing pipeline:/');
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?published[\"']?\s?:\s?[\"']?Published[\"']?/");
-        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?id[\"']?\s?:\s?[\"']?".$pipelineId."[\"']?/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?id[\"']?\s?:\s?[\"']?".$pipeline->getId()."[\"']?/");
     }
     
     public function testCanHideAPipeline()
     {
         $pipeline = $this->givenThereIsAPipeline();
         $pipeline = $this->whenAPipelineIsPublished($pipeline);
-        $pipelineId = $pipeline->getId();
-        $commandOutput = $this->execute('pipeline:hide', "$pipelineId\n y \n");
+        $commandOutput = $this->execute('pipeline:hide', $pipeline->getId()."\n y \n");
         
         $this->stringShouldMatchPattern($commandOutput, '/Unpublishing pipeline:/');
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?published[\"']?\s?:\s?[\"']?Hidden[\"']?/");
-        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?id[\"']?\s?:\s?[\"']?".$pipelineId."[\"']?/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?id[\"']?\s?:\s?[\"']?".$pipeline->getId()."[\"']?/");
     }
     
     public function testCanApproveAPipelineRelease()
@@ -54,15 +52,13 @@ class IntegrationCommandTest extends \PipelineMicroserviceCLITestCase
         $pipeline = $this->whenAPipelineIsPublished($pipeline);
 
         $release = $pipeline->getDeniedReleases()[0];
-        $releaseName = $release->getName();
         
-        $pipelineId = $pipeline->getId();
-        $commandOutput = $this->execute('pipeline:approve', "$pipelineId\n $releaseName \n y \n");
+        $commandOutput = $this->execute('pipeline:approve', $pipeline->getId()."\n ".$release->getName()." \n y \n");
         
-        $this->stringShouldMatchPattern($commandOutput, "/.*Are you sure to approve release $releaseName?/");
-        $this->stringShouldMatchPattern($commandOutput, "/.*Approving release: $releaseName\n.*/");
-        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?id[\"']?\s?:\s?[\"']?".$pipelineId."[\"']?/");
-        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?name[\"']?\s?:\s?[\"']?".$releaseName."[\"']?,[\\n\\r]*\s*[\"']?executePermission[\"']?\s?:\s?[\"']?Approved[\"']?/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*Are you sure to approve release ".$release->getName()."?/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*Approving release: ".$release->getName()."\n.*/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?id[\"']?\s?:\s?[\"']?".$pipeline->getId()."[\"']?/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?name[\"']?\s?:\s?[\"']?".$release->getName()."[\"']?,[\\n\\r]*\s*[\"']?executePermission[\"']?\s?:\s?[\"']?Approved[\"']?/");
     }
     
     public function testCanDenyAPipelineRelease()
@@ -72,15 +68,13 @@ class IntegrationCommandTest extends \PipelineMicroserviceCLITestCase
         $pipeline = $this->whenAPipelineIsPublished($pipeline);
 
         $release = $pipeline->getDeniedReleases()[0];
-        $releaseName = $release->getName();
         $pipeline = $this->whenAReleaseIsApproved($pipeline,$release);
         
-        $pipelineId = $pipeline->getId();
-        $commandOutput = $this->execute('pipeline:deny', "$pipelineId\n $releaseName \n y \n");
+        $commandOutput = $this->execute('pipeline:deny', $pipeline->getId()."\n ".$release->getName()." \n y \n");
         
         $this->stringShouldMatchPattern($commandOutput, "/.*Are you sure to deny release .*?\nDenying release.*/");
-        $this->stringShouldMatchPattern($commandOutput, "/.*Denying release: $releaseName\n.*/");
-        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?id[\"']?\s?:\s?[\"']?".$pipelineId."[\"']?/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*Denying release: ".$release->getName()."\n.*/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?id[\"']?\s?:\s?[\"']?".$pipeline->getId()."[\"']?/");
     }
     
     public function testCanRegisterAPipeline()
