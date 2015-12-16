@@ -3,11 +3,11 @@ namespace PipelinesMicroserviceCLI\Commands;
 
 class CommandTest extends \PipelineMicroserviceCLITestCase
 {
-    public function testPublishPipeline()
+    public function testCanPublishAPipeline()
     {
         $commandOutput = $this->execute(
             'pipeline:publish',
-            "0\n y \n",
+            "1\n y \n",
             [],
             ["HiddenPipelines.txt", "PublishedPipeline.txt"]
         );
@@ -16,11 +16,11 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
         $this->stringShouldMatchPattern($commandOutput, '/.*["\']?published["\']?\s?:\s?["\']?Published["\']?/');
     }
     
-    public function testHidePipeline()
+    public function testCanHideAPipeline()
     {
         $commandOutput = $this->execute(
             'pipeline:hide',
-            "0\n y \n",
+            "1\n y \n",
             [],
             ["PublicPipelines.txt", "PipelineToPublish.txt"]
         );
@@ -29,11 +29,11 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
         $this->stringShouldMatchPattern($commandOutput, '/.*["\']?published["\']?\s?:\s?["\']?Hidden["\']?/');
     }
     
-    public function testApprovePipelineRelease()
+    public function testCanApproveAPipelineRelease()
     {
         $commandOutput = $this->execute(
             'pipeline:approve',
-            "0\n 0 \n y \n",
+            "1\n 0.2.0 \n y \n",
             [],
             ["PublicPipelines.txt", "PipelineReleaseApproved.txt"]
         );
@@ -41,11 +41,11 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
         $this->stringShouldMatchPattern($commandOutput, '/.*Are you sure to approve release.*/');
     }
     
-    public function testDenyPipelineRelease()
+    public function testCanDenyAPipelineRelease()
     {
         $commandOutput = $this->execute(
             'pipeline:deny',
-            "0\n 2 \n y \n",
+            "1\n 0.1.0 \n y \n",
             [],
             ["PublicPipelines.txt", "PipelineReleaseDenied.txt"]
         );
