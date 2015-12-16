@@ -31,7 +31,6 @@ class GetJobById extends PipelineManagerAPICommand
         
         $job = $api->jobs->findById($jobId);
         $output->writeln( "" );
-        $response = $api->pipelines->hide( $pipeline->getId() );
         $output->writeln( json_encode( $job, JSON_PRETTY_PRINT) );
     }
     
