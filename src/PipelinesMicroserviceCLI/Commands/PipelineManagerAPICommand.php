@@ -5,9 +5,6 @@ use Symfony\Component\Console\Command\Command;
 use GuzzleHttp\Client;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Config\Definition\Builder\TreeBuilder;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
 use PipelinesMicroservice\PipelinesMicroserviceApi;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 

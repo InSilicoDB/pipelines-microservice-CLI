@@ -1,0 +1,23 @@
+HTTP/1.1 200 OK
+Date: Sat, 05 Jan 2013 07:05:13 GMT
+Server: Apache/2.2.3 (Red Hat)
+X-Powered-By: PHP/5.2.17
+Transfer-Encoding: chunked
+Content-Type: application/json
+
+{
+  "source": {
+    "method": "Git",
+    "resource": "https://github.com/InSilicoDB/pipeline-kallisto.git"
+  },
+  "id": 1,
+  "status": "running",
+  "release": {
+    "name": "0.1.0",
+    "executePermission": "Approved"
+  },
+  "user": 1,
+  "log": "",
+  "engine": "NextFlow",
+  "pipelineId": 1
+}
