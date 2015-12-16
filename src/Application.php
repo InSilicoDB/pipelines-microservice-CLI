@@ -5,8 +5,8 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
-use PipelinesMicroserviceCLI\Commands\GreetCommand;
+use PipelinesMicroserviceCLI\Commands\ApprovePipelineRelease;
+use PipelinesMicroserviceCLI\Application\PipelineManagerApplication;
 
-$application = new Application();
-$application->add( new GreetCommand() );
+$application = new PipelineManagerApplication('local');
 $application->run();
