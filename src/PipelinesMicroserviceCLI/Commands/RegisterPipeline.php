@@ -32,7 +32,7 @@ class RegisterPipeline extends PipelineManagerAPICommand
             'engine',
             InputArgument::OPTIONAL,
             'The engine which the pipeline is made to run on.',
-            'Nextflow'
+            'NextFlow'
         );
     }
     
@@ -46,6 +46,6 @@ class RegisterPipeline extends PipelineManagerAPICommand
         $api = $this->getPipelineMicroserviceApi();
         
         $registeredPipeline = $api->pipelines->register($author, $engine, $sourceMethod, $sourceResource);
-        $output->write( json_encode( $registeredPipeline ) );
+        $output->write( json_encode( $registeredPipeline, JSON_PRETTY_PRINT) );
     }
 }

@@ -55,13 +55,16 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
     
     public function testCanRegisterAPipeline()
     {
+        $authorId = 1;
+        $sourceResource = "https://github.com/InSilicoDB/pipeline-kallisto.git";
         $commandOutput = $this->execute(
             'pipeline:register',
             null,
-            ["author" => 1, "source-resource" => "https://github.com/InSilicoDB/pipeline-kallisto.git"],
+            ["author" => $authorId, "source-resource" => $sourceResource],
             ["PipelineToPublish.txt"]
         );
         
-        $this->stringShouldMatchPattern($commandOutput, '/.*["\']?published["\']?\s?:\s?["\']?Hidden["\']?.*["\']?id["\']?:1,/');
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?author[\"']?\s?:\s?[\"']?".$authorId."[\"']?,.*/");
+        $this->stringShouldMatchPattern($commandOutput, '/.*["\']?published["\']?\s?:\s?["\']?Hidden["\']?,.*/');
     }
 }
