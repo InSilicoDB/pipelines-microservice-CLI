@@ -33,7 +33,7 @@ Content-Type: application/json
 	    "name": "0.1.0",
 	    "executePermission": "Approved"
 	  },
-	  "user": 2,
+	  "user": 1,
 	  "log": "",
 	  "engine": "NextFlow",
 	  "pipelineId": 1
@@ -49,7 +49,7 @@ Content-Type: application/json
 	    "name": "0.1.0",
 	    "executePermission": "Approved"
 	  },
-	  "user": 4,
+	  "user": 1,
 	  "log": "",
 	  "engine": "NextFlow",
 	  "pipelineId": 1

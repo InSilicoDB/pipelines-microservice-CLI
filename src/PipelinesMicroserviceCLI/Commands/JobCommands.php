@@ -30,13 +30,12 @@ class JobCommands extends PipelineManagerAPICommand
                 $command->run($input, $output);
             break;
             case $jobActions[1]:
-                ;
+                $command = $this->getApplication()->find('job:user');
+                $command->run($input, $output);
             break;
             case $jobActions[2]:
-                ;
-            break;
-            default:
-                ;
+                $command = $this->getApplication()->find('job:status');
+                $command->run($input, $output);
             break;
         }
     }

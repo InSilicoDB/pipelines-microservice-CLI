@@ -12,7 +12,7 @@ class FindJobByStatus extends PipelineManagerAPICommand
     {
         $this
             ->setName('job:status')
-            ->setDescription('Find a job by the status of the job');
+            ->setDescription('Find jobs by the status of the jobs');
     }
     
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -23,7 +23,7 @@ class FindJobByStatus extends PipelineManagerAPICommand
         
         $jobs = $api->jobs->findByStatus($status);
         $output->writeln( "" );
-        $output->writeln( json_encode( $job, JSON_PRETTY_PRINT) );
+        $output->writeln( json_encode( $jobs, JSON_PRETTY_PRINT) );
     }
     
     private function askChooseStatus(InputInterface $input, OutputInterface $output)
