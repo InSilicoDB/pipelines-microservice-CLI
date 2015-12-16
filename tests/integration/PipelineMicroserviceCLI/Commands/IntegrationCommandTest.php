@@ -77,6 +77,20 @@ class IntegrationCommandTest extends \PipelineMicroserviceCLITestCase
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?id[\"']?\s?:\s?[\"']?".$pipeline->getId()."[\"']?/");
     }
     
+    public function testCanRegisterAPipeline()
+    {
+        $authorId = 1;
+        $sourceResource = "https://github.com/InSilicoDB/pipeline-kallisto.git";
+        $commandOutput = $this->execute(
+            'pipeline:register',
+            null,
+            ["author" => $authorId, "source-resource" => $sourceResource]
+        );
+    
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?author[\"']?\s?:\s?[\"']?".$authorId."[\"']?,.*/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?published[\"']?\s?:\s?[\"']?Hidden[\"']?,.*/");
+    }
+    
     protected function givenThereIsAPipeline()
     {
         return $this->api->pipelines->register(98, "NextFlow", "Git", "https://github.com/InSilicoDB/pipeline-kallisto.git");;

@@ -55,6 +55,21 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
         $this->stringShouldMatchPattern($commandOutput, '/.*Are you sure to deny release.*\nDenying release.*/');
     }
     
+    public function testCanRegisterAPipeline()
+    {
+        $authorId = 1;
+        $sourceResource = "https://github.com/InSilicoDB/pipeline-kallisto.git";
+        $commandOutput = $this->execute(
+            'pipeline:register',
+            null,
+            ["author" => $authorId, "source-resource" => $sourceResource],
+            ["PipelineToPublish.txt"]
+        );
+        
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?author[\"']?\s?:\s?[\"']?".$authorId."[\"']?,.*/");
+        $this->stringShouldMatchPattern($commandOutput, '/.*["\']?published["\']?\s?:\s?["\']?Hidden["\']?,.*/');
+    }
+    
     public function testCanFindAJobById()
     {
         $jobId = 1;
@@ -95,4 +110,5 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
         $this->stringShouldMatchPattern($commandOutput, '/.*Please choose the status you want to filter on.*/');
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?status[\"']?\s?:\s?[\"']?running[\"']?/");
     }
+    
 }
