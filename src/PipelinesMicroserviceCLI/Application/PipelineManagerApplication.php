@@ -8,6 +8,8 @@ use PipelinesMicroserviceCLI\Commands\HidePipeline;
 use PipelinesMicroserviceCLI\Commands\PublishPipeline;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Yaml\Yaml;
+use PipelinesMicroserviceCLI\Commands\Job;
+use PipelinesMicroserviceCLI\Commands\GetJobById;
 
 class PipelineManagerApplication extends Application
 {
@@ -31,6 +33,8 @@ class PipelineManagerApplication extends Application
         $this->addCommandWithName(DenyPipelineRelease::class);
         $this->addCommandWithName(HidePipeline::class);
         $this->addCommandWithName(PublishPipeline::class);
+        $this->addCommandWithName(Job::class);
+        $this->addCommandWithName(GetJobById::class);
     }
     
     public function addCommandWithName($commandName)
