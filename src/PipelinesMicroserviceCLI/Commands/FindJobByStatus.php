@@ -17,11 +17,9 @@ class FindJobByStatus extends PipelineManagerAPICommand
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $api = $this->getPipelineMicroserviceApi();
-        
         $status = $this->askChooseStatus($input, $output);
         
-        $jobs = $api->jobs->findByStatus($status);
+        $jobs = $this->getPipelineMicroserviceApi()->jobs->findByStatus($status);
         $output->writeln( "" );
         $output->writeln( json_encode( $jobs, JSON_PRETTY_PRINT) );
     }

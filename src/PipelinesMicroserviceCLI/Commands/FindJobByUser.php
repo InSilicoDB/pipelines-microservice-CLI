@@ -16,11 +16,9 @@ class FindJobByUser extends PipelineManagerAPICommand
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $api = $this->getPipelineMicroserviceApi();
-        
         $userId = $this->askEnterUserId($input, $output);
         
-        $jobs = $api->jobs->findByUserId($userId);
+        $jobs = $this->getPipelineMicroserviceApi()->jobs->findByUserId($userId);
         $output->writeln( "" );
         $output->writeln( json_encode( $jobs, JSON_PRETTY_PRINT) );
     }
