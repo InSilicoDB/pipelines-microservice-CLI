@@ -12,33 +12,42 @@ use PipelinesMicroservice\PipelinesMicroserviceApi;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use PipelinesMicroserviceCLI\Commands\Traits\PipelineChooser;
+use PipelinesMicroserviceCLI\Commands\Traits\ReleaseChooser;
 
-class PublishPipeline extends PipelineManagerAPICommand
+class DenyPipelineRelease extends PipelineManagerAPICommand
 {
     use PipelineChooser;
+    use ReleaseChooser;
     
     protected function configure()
     {
         $this
-            ->setName('pipeline:publish')
-            ->setDescription('Publish a hidden pipeline');
+            ->setName('pipeline:deny')
+            ->setDescription('Deny a pipeline release');
     }
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $api = $this->getPipelineMicroserviceApi();
-        $pipelinesToPublish = $api->pipelines->getHidden();
+        $publishedPipelines = $api->pipelines->getPublished();
         
-        if( !empty($pipelinesToPublish) ){
-            $pipeline = $this->askChoosePipeline($pipelinesToPublish, $input, $output, 'Please select the id of the pipeline you which to publish: ');
+        if( !empty($publishedPipelines) ){
+            $pipeline = $this->askChoosePipeline($publishedPipelines, $input, $output, 'Please select the pipeline you wish to deny a release of: ');
             
-            if ( !$this->askConfirmChoice($input, $output, "Are you sure to publish the pipeline?") ) {
+            $approvedReleases = $pipeline->getApprovedReleases();
+            if( empty($approvedReleases) ){
+                $output->writeln( "This pipeline has no releases to deny." );
+                return;
+            }
+            $release = $this->askChooseRelease($approvedReleases, $input, $output);
+            
+            if ( !$this->askConfirmChoice($input, $output, "Are you sure to deny release ".$release->getName()."?") ) {
                 return;
             }
             
             $output->writeln( "" );
-            $output->writeln( "Publishing pipeline: " );
-            $response = $api->pipelines->publish( $pipeline->getId() );
+            $output->writeln( "Denying release: ".$release->getName() );
+            $response = $api->pipelines->denyRelease($pipeline, $release);
             $output->writeln( json_encode( $response, JSON_PRETTY_PRINT) );
         }else{
             $output->writeln( "There are no pipelines available to publish." );

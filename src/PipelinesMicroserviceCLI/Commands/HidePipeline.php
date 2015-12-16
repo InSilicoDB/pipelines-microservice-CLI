@@ -11,57 +11,37 @@ use GuzzleHttp\Client;
 use PipelinesMicroservice\PipelinesMicroserviceApi;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use PipelinesMicroserviceCLI\Commands\Traits\PipelineChooser;
 
-class HidePipeline extends CLICommand
+class HidePipeline extends PipelineManagerAPICommand
 {
+    use PipelineChooser;
+    
     protected function configure()
     {
         $this
-        ->setName('pipeline:hide')
-        ->setDescription('Hide a pipeline')
-        ->addArgument(
-            'base_url',
-            InputArgument::REQUIRED,
-            'The location of the pipeline microservice'
-        );
-        
+            ->setName('pipeline:hide')
+            ->setDescription('Hide a published pipeline');
     }
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $baseUrl   = $input->getArgument('base_url');
-        $client    = $this->getHttpClient($baseUrl,$this->httpHandler);
-        $api       = new PipelinesMicroserviceApi($client);
+        $api       = $this->getPipelineMicroserviceApi();
         $pipelines = $api->pipelines->getPublished();
         
         if( !empty($pipelines) ){
-            $pipelineIds = [];
-            $messages    = [];
-            foreach ($pipelines as $pipeline) {
-                $pipelineIds[]  = $pipeline->getId();
-                $messages[]     = json_encode($pipeline,JSON_PRETTY_PRINT);
-            }
+            $pipeline = $this->askChoosePipeline($pipelines, $input, $output, 'Please select the id of the pipeline you wish to unpublish: ');
             
-            $output->write($messages,true);
-            
-            $helper   = $this->getHelper('question');
-            $question = new ChoiceQuestion(
-                'Please the id of the pipeline you which to publish: ',
-                $pipelineIds
-            );
-            $question->setErrorMessage('Pipeline id %s is invalid.');
-            $id = $helper->ask($input, $output, $question);
-            
-            $questionConfirm = new ConfirmationQuestion("Are you sure to hide pipeline $id?");
-            
-            if (!$helper->ask($input, $output, $questionConfirm)) {
+            if ( !$this->askConfirmChoice($input, $output, "Are you sure to unpublish the pipeline?") ) {
                 return;
             }
             
-            $output->writeln( "Publishing pipeline $id: " );
-            $output->writeln( json_encode( $api->pipelines->publish($id)) );
+            $output->writeln( "" );
+            $output->writeln( "Unpublishing pipeline: " );
+            $response = $api->pipelines->hide( $pipeline->getId() );
+            $output->writeln( json_encode( $response, JSON_PRETTY_PRINT) );
         }else{
-            $output->writeln( "There are no pipelines available to publish." );
+            $output->writeln( "There are no pipelines available to unpublish." );
         }
     }
 }

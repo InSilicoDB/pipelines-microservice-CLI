@@ -5,13 +5,8 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
-use PipelinesMicroserviceCLI\Commands\GreetCommand;
-use PipelinesMicroserviceCLI\Commands\PublishPipeline;
-use PipelinesMicroserviceCLI\Commands\HidePipeline;
-use PipelinesMicroserviceCLI\Commands\RegisterPipeline;
+use PipelinesMicroserviceCLI\Commands\ApprovePipelineRelease;
+use PipelinesMicroserviceCLI\Application\PipelineManagerApplication;
 
-$application = new Application();
-$application->add( new PublishPipeline() );
-$application->add( new HidePipeline() );
-$application->add( new RegisterPipeline() );
+$application = new PipelineManagerApplication('local');
 $application->run();

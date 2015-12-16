@@ -1,0 +1,21 @@
+INSERT INTO pipelines
+    (id,author,engine,sourceMethod,sourceUrl,releases,publishedStatus)
+VALUES
+	(
+	1,
+	136,
+	"NextFlow",
+	"Git",
+	"https://github.com/InSilicoDB/pipeline-kallisto.git",
+	'[{"name":"0.1-beta.1","executePermission":"Approved"},{"name":"0.1-beta.2","executePermission":"Approved"},{"name":"0.1.0","executePermission":"Approved"},{"name":"0.2.0","executePermission":"Denied"},{"name":"0.2.1","executePermission":"Denied"}]',
+	"Published"
+	),
+	(
+	2,
+	136,
+	"NextFlow",
+	"Git",
+	"https://github.com/InSilicoDB/pipeline-kallisto2.git",
+	'[{"name":"0.1-beta.1","executePermission":"Approved"},{"name":"0.1-beta.2","executePermission":"Approved"},{"name":"0.1.0","executePermission":"Approved"},{"name":"0.2.0","executePermission":"Denied"},{"name":"0.2.1","executePermission":"Denied"}]',
+	"Hidden"
+	);
