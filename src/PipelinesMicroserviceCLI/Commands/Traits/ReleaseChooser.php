@@ -9,15 +9,15 @@ trait ReleaseChooser
     
     private function askChooseRelease($releases, $input, $output)
     {
-        $releseNames = [];
+        $releaseNames = [];
         foreach ($releases as $rel) {
-            $releseNames[$rel->getName()] = "Release ".$rel->getName();
+            $releaseNames[$rel->getName()] = "Release ".$rel->getName();
         }
         
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion(
             'Please select the release reference: ',
-            $releseNames
+            $releaseNames
         );
         $question->setErrorMessage('Selected reference is invalid.');
         $question->setMaxAttempts(3);
