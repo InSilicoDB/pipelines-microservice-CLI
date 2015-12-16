@@ -50,7 +50,7 @@ class IntegrationCommandTest extends \PipelineMicroserviceCLITestCase
     public function testCanApproveAPipelineRelease()
     {
         $pipeline = $this->givenThereIsAPipeline();
-        $pipeline = $this->whenPipelineReleasesAreFetched($pipeline);
+        $pipeline = $this->whenAPipelineContainsReleases($pipeline);
         $pipeline = $this->whenAPipelineIsPublished($pipeline);
 
         $release = $pipeline->getDeniedReleases()[0];
@@ -68,7 +68,7 @@ class IntegrationCommandTest extends \PipelineMicroserviceCLITestCase
     public function testCanDenyAPipelineRelease()
     {
         $pipeline = $this->givenThereIsAPipeline();
-        $pipeline = $this->whenPipelineReleasesAreFetched($pipeline);
+        $pipeline = $this->whenAPipelineContainsReleases($pipeline);
         $pipeline = $this->whenAPipelineIsPublished($pipeline);
 
         $release = $pipeline->getDeniedReleases()[0];
@@ -93,21 +93,21 @@ class IntegrationCommandTest extends \PipelineMicroserviceCLITestCase
         return $this->api->pipelines->publish($pipeline->getId());
     }
     
-    protected function whenPipelineReleasesAreFetched(Pipeline $pipeline)
+    protected function whenAPipelineContainsReleases(Pipeline $pipeline)
     {
         $timeout = 10;
-        $time = 0;
-        $timeStart = microtime(true);
-        while ( empty($pipeline->getReleases()) ){
-            if ( $time >= $timeout ) {
+        $timeLooping = 0;
+        $startTime = microtime(true);
+        while ( empty($pipeline->getReleases()) ) {
+            if ( $timeLooping >= $timeout ) {
                 throw new \Exception("Timeout of $timeout seconds is passed to fetch releases");
                 break;
             }
-            if ( $time>0 ) {
+            if ( $timeLooping > 0 ) {
                 sleep(1);
             }
             $pipeline = $this->api->pipelines->findById($pipeline->getId());
-            $time = microtime(true)-$timeStart;
+            $timeLooping = microtime(true) - $startTime;
         }
     
         return $pipeline;
