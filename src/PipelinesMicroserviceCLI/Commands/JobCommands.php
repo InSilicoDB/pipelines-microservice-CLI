@@ -20,24 +20,27 @@ class JobCommands extends PipelineManagerAPICommand
             "Search job by job id",
             "Search jobs by user id",
             "Search jobs by job status",
+            "Launch a job for a given pipeline and release",
         ];
         
         $jobAction = $this->askChooseJobAction($input, $output, $jobActions);
+        $command = null;
         
         switch ($jobAction) {
             case $jobActions[0]:
                 $command = $this->getApplication()->find('job:id');
-                $command->run($input, $output);
             break;
             case $jobActions[1]:
                 $command = $this->getApplication()->find('job:user');
-                $command->run($input, $output);
             break;
             case $jobActions[2]:
                 $command = $this->getApplication()->find('job:status');
-                $command->run($input, $output);
+            break;
+            case $jobActions[3]:
+                $command = $this->getApplication()->find('job:launch');
             break;
         }
+        $command->run($input, $output);
     }
     
     protected function askChooseJobAction(InputInterface $input, OutputInterface $output, $jobActions, $questionString = "Select the interaction you wish to do:")

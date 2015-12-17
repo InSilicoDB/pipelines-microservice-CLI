@@ -8,22 +8,8 @@ use PipelinesMicroservice\PipelinesMicroserviceApi;
 use PipelinesMicroservice\Entities\Pipeline;
 use PipelinesMicroservice\Types\Release;
 
-class IntegrationCommandTest extends \PipelineMicroserviceCLITestCase
+class IntegrationCommandTest extends IntegrationCommandTestCase
 {
-    protected $env = "integration-test";
-    
-    protected $configurationArray;
-    
-    protected $api;
-    
-    public function setUp()
-    {
-        if ( empty($this->configurationArray) ) {
-            $this->configurationArray = Yaml::parse(file_get_contents(TEST_DIR."/../../src/resources/PipelineManagerAPICommand.integration-test.yml"));
-        }
-        $this->api = $this->createApi();
-    }
-    
     public function testCanPublishAPipeline()
     {
         $pipeline = $this->givenThereIsAPipeline();
@@ -91,45 +77,24 @@ class IntegrationCommandTest extends \PipelineMicroserviceCLITestCase
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?published[\"']?\s?:\s?[\"']?Hidden[\"']?,.*/");
     }
     
-    protected function givenThereIsAPipeline()
+    public function testCanLaunchAJob()
     {
-        return $this->api->pipelines->register(98, "NextFlow", "Git", "https://github.com/InSilicoDB/pipeline-kallisto.git");;
-    }
-    
-    protected function whenAPipelineIsPublished($pipeline)
-    {
-        return $this->api->pipelines->publish($pipeline->getId());
-    }
-    
-    protected function whenAPipelineContainsReleases(Pipeline $pipeline)
-    {
-        $timeout = 10;
-        $timeLooping = 0;
-        $startTime = microtime(true);
-        while ( empty($pipeline->getReleases()) ) {
-            if ( $timeLooping >= $timeout ) {
-                throw new \Exception("Timeout of $timeout seconds is passed to fetch releases");
-                break;
-            }
-            if ( $timeLooping > 0 ) {
-                sleep(1);
-            }
-            $pipeline = $this->api->pipelines->findById($pipeline->getId());
-            $timeLooping = microtime(true) - $startTime;
-        }
-    
-        return $pipeline;
-    }
-    
-    protected function createApi()
-    {
-        $client = new Client(["base_uri" => $this->configurationArray["base_uri"]]);
+        $pipeline = $this->givenThereIsAPipeline();
+        $pipeline = $this->whenAPipelineContainsReleases($pipeline);
+        $pipeline = $this->whenAPipelineIsPublished($pipeline);
         
-        return new PipelinesMicroserviceApi($client);
+        $release = $pipeline->getRelease("0.10");
+        $pipeline = $this->whenAReleaseIsApproved($pipeline,$release);
+        $pipeline = $this->whenAPipelineReleaseContainsReleaseParameters($pipeline, $release);
+        
+        $commandOutput = $this->execute(
+            'job:launch',
+            $pipeline->getId()."\n ".$release->getName()." \n \n \n \n /somepath/somefile.txt,/somepath/somefile.txt \n \n /somepath/somefile.txt,/somepath/somefile.txt \n \n \n \n \n \n \n \n \n 136 \n"
+        );
+        
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?status[\"']?\s?:\s?[\"']?scheduled[\"']?/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?pipelineId[\"']?\s?:\s?[\"']?".$pipeline->getId()."[\"']?/");
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?releaseRef[\"']?\s?:\s?[\"']?".$release->getName()."[\"']?/");
     }
     
-    protected function whenAReleaseIsApproved(Pipeline $pipeline, Release $release)
-    {
-        return $this->api->pipelines->approveRelease($pipeline, $release);
-    }
 }

@@ -91,7 +91,7 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
             'job:user',
             $userId,
             [],
-            ["JobWithStatusRunning.txt"]
+            ["JobsWithStatusRunning.txt"]
         );
     
         $this->stringShouldMatchPattern($commandOutput, '/.*Please enter the id of the user you want to filter on.*/');
@@ -104,11 +104,22 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
             'job:status',
             Job::STATUS_RUNNING,
             [],
-            ["JobWithStatusRunning.txt"]
+            ["JobsWithStatusRunning.txt"]
         );
     
         $this->stringShouldMatchPattern($commandOutput, '/.*Please choose the status you want to filter on.*/');
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?status[\"']?\s?:\s?[\"']?running[\"']?/");
     }
     
+    public function testCanLaunchAJob()
+    {
+        $commandOutput = $this->execute(
+            'job:launch',
+            "1\n 0.1.0 \n \n /somepath/somefile.txt,/somepath/somefile.txt \n \n 30 \n \n 136 \n",
+            [],
+            ["PublicPipelines.txt", "JobLaunch.txt"]
+        );
+    
+        $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?status[\"']?\s?:\s?[\"']?scheduled[\"']?/");
+    }
 }

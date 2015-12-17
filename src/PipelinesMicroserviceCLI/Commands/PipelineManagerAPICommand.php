@@ -36,11 +36,11 @@ abstract class PipelineManagerAPICommand extends Command
         return $this->api;
     }
     
-    protected function askConfirmChoice($input, $output, $questionString = "Are you sure?")
+    protected function askConfirmChoice($input, $output, $questionString = "Are you sure?", $default = true)
     {
         $confirmed = true;
         $helper = $this->getHelper('question');
-        $questionConfirm = new ConfirmationQuestion($questionString);
+        $questionConfirm = new ConfirmationQuestion($questionString, $default);
         if ( !$helper->ask($input, $output, $questionConfirm) ) {
             $confirmed = false;
         }
