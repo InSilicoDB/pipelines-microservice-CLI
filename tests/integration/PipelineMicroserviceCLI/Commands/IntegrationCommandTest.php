@@ -13,7 +13,9 @@ class IntegrationCommandTest extends IntegrationCommandTestCase
     public function testCanPublishAPipeline()
     {
         $pipeline = $this->givenThereIsAPipeline();
-        $commandOutput = $this->execute('pipeline:publish', $pipeline->getId()."\n y \n");
+        $commandOutput = $this->createCommandTester("pipeline:publish")
+            ->withAnswersToCommandQuestions($pipeline->getId()."\n y \n")
+            ->execute();
         
         $this->stringShouldMatchPattern($commandOutput, '/Publishing pipeline:/');
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?published[\"']?\s?:\s?[\"']?Published[\"']?/");
@@ -24,7 +26,10 @@ class IntegrationCommandTest extends IntegrationCommandTestCase
     {
         $pipeline = $this->givenThereIsAPipeline();
         $pipeline = $this->whenAPipelineIsPublished($pipeline);
-        $commandOutput = $this->execute('pipeline:hide', $pipeline->getId()."\n y \n");
+        
+        $commandOutput = $this->createCommandTester("pipeline:hide")
+            ->withAnswersToCommandQuestions($pipeline->getId()."\n y \n")
+            ->execute();
         
         $this->stringShouldMatchPattern($commandOutput, '/Unpublishing pipeline:/');
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?published[\"']?\s?:\s?[\"']?Hidden[\"']?/");
@@ -39,7 +44,9 @@ class IntegrationCommandTest extends IntegrationCommandTestCase
 
         $release = $pipeline->getDeniedReleases()[0];
         
-        $commandOutput = $this->execute('pipeline:approve', $pipeline->getId()."\n ".$release->getName()." \n y \n");
+        $commandOutput = $this->createCommandTester("pipeline:approve")
+            ->withAnswersToCommandQuestions($pipeline->getId()."\n ".$release->getName()." \n y \n")
+            ->execute();
         
         $this->stringShouldMatchPattern($commandOutput, "/.*Are you sure to approve release ".$release->getName()."?/");
         $this->stringShouldMatchPattern($commandOutput, "/.*Approving release: ".$release->getName()."\n.*/");
@@ -56,7 +63,9 @@ class IntegrationCommandTest extends IntegrationCommandTestCase
         $release = $pipeline->getDeniedReleases()[0];
         $pipeline = $this->whenAReleaseIsApproved($pipeline,$release);
         
-        $commandOutput = $this->execute('pipeline:deny', $pipeline->getId()."\n ".$release->getName()." \n y \n");
+        $commandOutput = $this->createCommandTester("pipeline:deny")
+            ->withAnswersToCommandQuestions($pipeline->getId()."\n ".$release->getName()." \n y \n")
+            ->execute();
         
         $this->stringShouldMatchPattern($commandOutput, "/.*Are you sure to deny release .*?\nDenying release.*/");
         $this->stringShouldMatchPattern($commandOutput, "/.*Denying release: ".$release->getName()."\n.*/");
@@ -67,11 +76,9 @@ class IntegrationCommandTest extends IntegrationCommandTestCase
     {
         $authorId = 1;
         $sourceResource = "https://github.com/InSilicoDB/pipeline-kallisto.git";
-        $commandOutput = $this->execute(
-            'pipeline:register',
-            null,
-            ["author" => $authorId, "source-resource" => $sourceResource]
-        );
+        $commandOutput = $this->createCommandTester("pipeline:register")
+            ->withCommandArguments(["author" => $authorId, "source-resource" => $sourceResource])
+            ->execute();
     
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?author[\"']?\s?:\s?[\"']?".$authorId."[\"']?,.*/");
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?published[\"']?\s?:\s?[\"']?Hidden[\"']?,.*/");
@@ -87,10 +94,9 @@ class IntegrationCommandTest extends IntegrationCommandTestCase
         $pipeline = $this->whenAReleaseIsApproved($pipeline,$release);
         $pipeline = $this->whenAPipelineReleaseContainsReleaseParameters($pipeline, $release);
         
-        $commandOutput = $this->execute(
-            'job:launch',
-            $pipeline->getId()."\n ".$release->getName()." \n \n \n \n /somepath/somefile.txt,/somepath/somefile.txt \n \n /somepath/somefile.txt,/somepath/somefile.txt \n \n \n \n \n \n \n \n \n 136 \n"
-        );
+        $commandOutput = $this->createCommandTester("job:launch")
+            ->withAnswersToCommandQuestions($pipeline->getId()."\n ".$release->getName()." \n \n \n \n /somepath/somefile.txt,/somepath/somefile.txt \n \n /somepath/somefile.txt,/somepath/somefile.txt \n \n \n \n \n \n \n \n \n 136 \n")
+            ->execute();
         
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?status[\"']?\s?:\s?[\"']?scheduled[\"']?/");
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?pipelineId[\"']?\s?:\s?[\"']?".$pipeline->getId()."[\"']?/");
