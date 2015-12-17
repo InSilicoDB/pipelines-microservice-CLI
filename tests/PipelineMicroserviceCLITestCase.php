@@ -18,32 +18,33 @@ abstract class PipelineMicroserviceCLITestCase extends \PHPUnit_Framework_TestCa
      * @param String $answers
      * @return CommandTester
      */
-    protected function createTesterWithCommandNameAndMockDataAndAnswers(
-            $commandName,
-            $answers,
-            array $mockReponsePaths = null
-    ) {
+    protected function createTesterWithCommandNameAndMockDataAndAnswers($config) {
         $mockHandler = null;
-        if ( $mockReponsePaths ) {
-            $mockHandler = $this->getHttpMockHandler($mockReponsePaths);
+        if ( isset($config["mockReponsePaths"]) ) {
+            $mockHandler = $this->getHttpMockHandler($config["mockReponsePaths"]);
         }
         $application = new PipelineManagerApplication($this->env, $mockHandler);
 
-        $command = $application->find($commandName);
+        $command = $application->find($config["command"]);
 
-        $helper = $command->getHelper('question');
-        $helper->setInputStream($this->getInputStream($answers));
+        if ( isset($config["answers"]) ) {
+            $helper = $command->getHelper('question');
+            $helper->setInputStream($this->getInputStream($config["answers"]));
+        }
 
         return new CommandTester($command);
     }
 
-    protected function execute($commandName, $answers, array $arguments = [], array $mockReponsePaths = null)
+    protected function execute($config)
     {
-        $commandTester = $this->createTesterWithCommandNameAndMockDataAndAnswers($commandName, $answers, $mockReponsePaths);
-        if ( !isset($arguments["command"]) ) {
-            $arguments["command"] = $commandName;
+        $commandTester = $this->createTesterWithCommandNameAndMockDataAndAnswers($config);
+        if ( !isset($config["arguments"]) ) {
+            $config["arguments"] = [];
         }
-        $commandTester->execute($arguments);
+        
+        $config["arguments"]["command"] = $config["command"];
+        
+        $commandTester->execute($config["arguments"]);
         
         return $commandTester->getDisplay();
     }

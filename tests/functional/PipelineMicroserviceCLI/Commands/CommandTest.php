@@ -7,12 +7,11 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
 {
     public function testCanPublishAPipeline()
     {
-        $commandOutput = $this->execute(
-            'pipeline:publish',
-            "1\n y \n",
-            [],
-            ["HiddenPipelines.txt", "PublishedPipeline.txt"]
-        );
+        $commandOutput = $this->execute([
+            "command" => 'pipeline:publish',
+            "answers" => "1\n y \n",
+            "mockReponsePaths" => ["HiddenPipelines.txt", "PublishedPipeline.txt"]
+        ]);
         
         $this->stringShouldMatchPattern($commandOutput, '/Publishing pipeline:/');
         $this->stringShouldMatchPattern($commandOutput, '/.*["\']?published["\']?\s?:\s?["\']?Published["\']?/');
@@ -20,12 +19,11 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
     
     public function testCanHideAPipeline()
     {
-        $commandOutput = $this->execute(
-            'pipeline:hide',
-            "1\n y \n",
-            [],
-            ["PublicPipelines.txt", "PipelineToPublish.txt"]
-        );
+        $commandOutput = $this->execute([
+            "command" => 'pipeline:hide',
+            "answers" => "1\n y \n",
+            "mockReponsePaths" => ["PublicPipelines.txt", "PipelineToPublish.txt"]
+        ]);
         
         $this->stringShouldMatchPattern($commandOutput, '/Unpublishing pipeline:/');
         $this->stringShouldMatchPattern($commandOutput, '/.*["\']?published["\']?\s?:\s?["\']?Hidden["\']?/');
@@ -33,24 +31,22 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
     
     public function testCanApproveAPipelineRelease()
     {
-        $commandOutput = $this->execute(
-            'pipeline:approve',
-            "1\n 0.2.0 \n y \n",
-            [],
-            ["PublicPipelines.txt", "PipelineReleaseApproved.txt"]
-        );
+        $commandOutput = $this->execute([
+            "command" => 'pipeline:approve',
+            "answers" => "1\n 0.2.0 \n y \n",
+            "mockReponsePaths" => ["PublicPipelines.txt", "PipelineReleaseApproved.txt"]
+        ]);
         
         $this->stringShouldMatchPattern($commandOutput, '/.*Are you sure to approve release.*/');
     }
     
     public function testCanDenyAPipelineRelease()
     {
-        $commandOutput = $this->execute(
-            'pipeline:deny',
-            "1\n 0.1.0 \n y \n",
-            [],
-            ["PublicPipelines.txt", "PipelineReleaseDenied.txt"]
-        );
+        $commandOutput = $this->execute([
+            "command" => 'pipeline:deny',
+            "answers" => "1\n 0.1.0 \n y \n",
+            "mockReponsePaths" => ["PublicPipelines.txt", "PipelineReleaseDenied.txt"]
+        ]);
         
         $this->stringShouldMatchPattern($commandOutput, '/.*Are you sure to deny release.*\nDenying release.*/');
     }
@@ -59,12 +55,11 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
     {
         $authorId = 1;
         $sourceResource = "https://github.com/InSilicoDB/pipeline-kallisto.git";
-        $commandOutput = $this->execute(
-            'pipeline:register',
-            null,
-            ["author" => $authorId, "source-resource" => $sourceResource],
-            ["PipelineToPublish.txt"]
-        );
+        $commandOutput = $this->execute([
+            "command" => 'pipeline:register',
+            "arguments" => ["author" => $authorId, "source-resource" => $sourceResource],
+            "mockReponsePaths" => ["PipelineToPublish.txt"]
+        ]);
         
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?author[\"']?\s?:\s?[\"']?".$authorId."[\"']?,.*/");
         $this->stringShouldMatchPattern($commandOutput, '/.*["\']?published["\']?\s?:\s?["\']?Hidden["\']?,.*/');
@@ -73,12 +68,11 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
     public function testCanFindAJobById()
     {
         $jobId = 1;
-        $commandOutput = $this->execute(
-            'job:id',
-            $jobId,
-            [],
-            ["JobSingle.txt"]
-        );
+        $commandOutput = $this->execute([
+            "command" => 'job:id',
+            "answers" => $jobId,
+            "mockReponsePaths" => ["JobSingle.txt"]
+        ]);
     
         $this->stringShouldMatchPattern($commandOutput, '/.*Please enter the id of the job.*/');
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?id[\"']?\s?:\s?[\"']?".$jobId."[\"']?/");
@@ -87,12 +81,11 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
     public function testCanFindAJobsByUserId()
     {
         $userId = 1;
-        $commandOutput = $this->execute(
-            'job:user',
-            $userId,
-            [],
-            ["JobsWithStatusRunning.txt"]
-        );
+        $commandOutput = $this->execute([
+            "command" => 'job:user',
+            "answers" => $userId,
+            "mockReponsePaths" => ["JobsWithStatusRunning.txt"]
+        ]);
     
         $this->stringShouldMatchPattern($commandOutput, '/.*Please enter the id of the user you want to filter on.*/');
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?user[\"']?\s?:\s?[\"']?".$userId."[\"']?/");
@@ -100,12 +93,11 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
     
     public function testCanFindJobsByStatus()
     {
-        $commandOutput = $this->execute(
-            'job:status',
-            Job::STATUS_RUNNING,
-            [],
-            ["JobsWithStatusRunning.txt"]
-        );
+        $commandOutput = $this->execute([
+            "command" => 'job:status',
+            "answers" => Job::STATUS_RUNNING,
+            "mockReponsePaths" => ["JobsWithStatusRunning.txt"]
+        ]);
     
         $this->stringShouldMatchPattern($commandOutput, '/.*Please choose the status you want to filter on.*/');
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?status[\"']?\s?:\s?[\"']?running[\"']?/");
@@ -113,12 +105,11 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
     
     public function testCanLaunchAJob()
     {
-        $commandOutput = $this->execute(
-            'job:launch',
-            "1\n 0.1.0 \n \n /somepath/somefile.txt,/somepath/somefile.txt \n \n 30 \n \n 136 \n",
-            [],
-            ["PublicPipelines.txt", "JobLaunch.txt"]
-        );
+        $commandOutput = $this->execute([
+            "command" => 'job:launch',
+            "answers" => "1\n 0.1.0 \n \n /somepath/somefile.txt,/somepath/somefile.txt \n \n 30 \n \n 136 \n",
+            "mockReponsePaths" => ["PublicPipelines.txt", "JobLaunch.txt"]
+        ]);
     
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?status[\"']?\s?:\s?[\"']?scheduled[\"']?/");
     }
