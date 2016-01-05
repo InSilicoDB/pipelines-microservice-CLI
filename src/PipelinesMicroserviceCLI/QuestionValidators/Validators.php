@@ -75,17 +75,18 @@ class Validators
     
     public static function filesValidator( $required = false )
     {
+        $fileSeparator = ";";
         $class = self::class;
-        return function ($answer) use ($class, $required)
+        return function ($answer) use ($class, $required, $fileSeparator)
         {
             if ($required) {
-                $files = explode(";", $answer);
+                $files = explode($fileSeparator, $answer);
                 if (count($files) > 1){
                     foreach ($files as $file) {
                         $fileReturned = call_user_func($class::fileValidator(),$answer);
                     }
                 } else {
-                    throw new \RuntimeException("Please provide a comma separated list of files");
+                    throw new \RuntimeException("Please provide a \"$fileSeparator\" separated list of files");
                 }
             }
             
