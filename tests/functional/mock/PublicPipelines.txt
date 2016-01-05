@@ -3,59 +3,98 @@ Date: Sat, 05 Jan 2013 07:05:13 GMT
 Server: Apache/2.2.3 (Red Hat)
 X-Powered-By: PHP/5.2.17
 Transfer-Encoding: chunked
-Content-Type: application/json
+Content-parameterType: application/json
 
 [
-	{
-		"author": 1,
-		"source": {
-				"method": "Git",
-				"resource": "https://github.com/InSilicoDB/pipeline-kallisto.git"
-		},
-		"published": "Published",
-		"id": 1,
-		"releases": [{
-				"name": "0.1-beta.1",
-				"executePermission": "Approved"
-		}, {
-				"name": "0.1-beta.2",
-				"executePermission": "Approved"
-		}, {
-				"name": "0.1.0",
-				"executePermission": "Approved"
-		}, {
-				"name": "0.2.0",
-				"executePermission": "Denied"
-		}, {
-				"name": "0.2.1",
-				"executePermission": "Denied"
-		}],
-		"engine": "NextFlow"
-	},
-	{
-		"author": 1,
-		"source": {
-				"method": "Git",
-				"resource": "https://github.com/InSilicoDB/pipeline-kallisto.git"
-		},
-		"published": "Published",
-		"id": 2,
-		"releases": [{
-				"name": "0.1-beta.1",
-				"executePermission": "Denied"
-		}, {
-				"name": "0.1-beta.2",
-				"executePermission": "Denied"
-		}, {
-				"name": "0.1.0",
-				"executePermission": "Denied"
-		}, {
-				"name": "0.2.0",
-				"executePermission": "Denied"
-		}, {
-				"name": "0.2.1",
-				"executePermission": "Denied"
-		}],
-		"engine": "NextFlow"
-	}
+    {
+        "author": 1,
+        "source": {
+                "method": "Git",
+                "resource": "https://github.com/InSilicoDB/pipeline-kallisto.git"
+        },
+        "published": "Published",
+        "id": 1,
+        "releases": [
+            {
+                "name": "0.1-beta.1",
+                "executePermission": "Approved",
+                "parameters": []
+            }, {
+                "name": "0.1-beta.2",
+                "executePermission": "Approved",
+                "parameters": []
+            }, {
+                "name": "0.1.0",
+                "executePermission": "Approved",
+                "parameters": [
+                    {
+                      "name": "quant.index",
+                      "parameterType": "FileParameter",
+                      "description": "Filename for the kallisto index to be used for quantification"
+                    },
+                    {
+                      "name": "quant.files",
+                      "parameterType": "FilesParameter",
+                      "description": "FASTQ files",
+                      "required": true
+                    },
+                    {
+                      "name": "quant.bias",
+                      "parameterType": "BooleanParameter",
+                      "description": "Perform sequence based bias correction"
+                    },
+                    {
+                      "name": "quant.bootstrap-samples",
+                      "parameterType": "IntegerParameter",
+                      "description": "Number of bootstrap samples (default: 0)"
+                    },
+                    {
+                      "name": "quant.seed",
+                      "parameterType": "IntegerParameter",
+                      "description": "Seed for the bootstrap sampling (default: 42)"
+                    }
+                ]
+            }, {
+                "name": "0.2.0",
+                "executePermission": "Denied",
+                "parameters": []
+            }, {
+                "name": "0.2.1",
+                "executePermission": "Denied",
+                "parameters": []
+            }
+        ],
+        "engine": "NextFlow"
+    },
+    {
+        "author": 1,
+        "source": {
+                "method": "Git",
+                "resource": "https://github.com/InSilicoDB/pipeline-kallisto.git"
+        },
+        "published": "Published",
+        "id": 2,
+        "releases": [{
+                "name": "0.1-beta.1",
+                "executePermission": "Denied",
+                "parameters": []
+        }, {
+                "name": "0.1-beta.2",
+                "executePermission": "Denied",
+                "parameters": []
+        }, {
+                "name": "0.1.0",
+                "executePermission": "Denied",
+                "parameters": []
+        }, {
+                "name": "0.2.0",
+                "executePermission": "Denied",
+                "parameters": []
+        }, {
+                "name": "0.2.1",
+                "executePermission": "Denied",
+                "parameters": []
+        }],
+        "engine": "NextFlow"
+    }
 ]

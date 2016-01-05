@@ -1,5 +1,4 @@
 <?php
-
 namespace PipelinesMicroserviceCLI\Commands;
 
 use Symfony\Component\Console\Input\InputArgument;

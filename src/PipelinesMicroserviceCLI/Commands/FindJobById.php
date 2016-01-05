@@ -4,6 +4,7 @@ namespace PipelinesMicroserviceCLI\Commands;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use PipelinesMicroserviceCLI\QuestionValidators\Validators;
 
 class FindJobById extends PipelineManagerAPICommand
 {
@@ -26,14 +27,8 @@ class FindJobById extends PipelineManagerAPICommand
     private function askEnterIdOfJob(InputInterface $input, OutputInterface $output)
     {
         $helper = $this->getHelper('question');
-        $question = new Question('Please enter the id of the job');
-        $question->setValidator(function( $answer)
-        {
-            if ( !is_numeric($answer) ){
-                throw new \RuntimeException("The id of the job should be numeric");
-            }
-            return $answer;
-        });
+        $question = new Question('Please enter the id of the job: ');
+        $question->setValidator(Validators::integerValidator(true));
         return $helper->ask($input, $output, $question);
     }
 }

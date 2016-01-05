@@ -2,12 +2,23 @@
 namespace PipelinesMicroserviceCLI\Commands\Traits;
 
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use PipelinesMicroservice\Entities\Pipeline;
 
 trait PipelineChooser
 {
     use Chooser;
     
-    protected function askChoosePipeline($pipelines, $input, $output, $questionString = "Please select a pipeline: ")
+    /**
+     * 
+     * @param [Pipeline] $pipelines
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param string $questionString
+     * @return Pipeline $pipeline
+     */
+    protected function askChoosePipeline($pipelines, InputInterface $input, OutputInterface $output, $questionString = "Please select a pipeline: ")
     {
         $pipelineResources = [];
         foreach ($pipelines as $pipeline) {

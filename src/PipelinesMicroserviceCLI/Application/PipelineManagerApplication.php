@@ -14,6 +14,7 @@ use PipelinesMicroserviceCLI\Commands\FindJobById;
 use PipelinesMicroserviceCLI\Commands\FindJobByStatus;
 use PipelinesMicroserviceCLI\Commands\JobCommands;
 use PipelinesMicroserviceCLI\Commands\FindJobByUser;
+use PipelinesMicroserviceCLI\Commands\LaunchJob;
 
 class PipelineManagerApplication extends Application
 {
@@ -42,6 +43,7 @@ class PipelineManagerApplication extends Application
         $this->addCommandWithName(FindJobById::class);
         $this->addCommandWithName(FindJobByUser::class);
         $this->addCommandWithName(FindJobByStatus::class);
+        $this->addCommandWithName(LaunchJob::class);
     }
     
     public function addCommandWithName($commandName)
