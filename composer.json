@@ -2,7 +2,7 @@
     "name": "insilicodb/pipelines-microservice-CLI",
     "description": "InSilicoDB pipelines-microservices CLI",
     "require": {
-        "InSilicoDB/pipelines-microservice-php-sdk": "dev-feature-release-parameters",
+        "InSilicoDB/pipelines-microservice-php-sdk": "dev-develop",
         "symfony/console": "^3.0",
         "symfony/config": "^3.0"
     },
