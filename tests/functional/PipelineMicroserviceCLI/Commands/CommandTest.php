@@ -98,7 +98,7 @@ class CommandTest extends \PipelineMicroserviceCLITestCase
     public function testCanLaunchAJob()
     {
         $commandOutput = $this->createCommandTester('job:launch')
-            ->withAnswersToCommandQuestions("1\n 0.1.0 \n \n /somepath/somefile.txt,/somepath/somefile.txt \n \n 30 \n \n 136 \n")
+            ->withAnswersToCommandQuestions("1\n 0.1.0 \n \n /somepath/somefile.txt;/somepath/somefile.txt \n \n 30 \n \n 136 \n")
             ->withMocksForCommandHttpRequests(["PublicPipelines.txt", "JobLaunch.txt"])
             ->execute();
     

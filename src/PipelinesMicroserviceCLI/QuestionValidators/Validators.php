@@ -79,7 +79,7 @@ class Validators
         return function ($answer) use ($class, $required)
         {
             if ($required) {
-                $files = explode(",", $answer);
+                $files = explode(";", $answer);
                 if (count($files) > 1){
                     foreach ($files as $file) {
                         $fileReturned = call_user_func($class::fileValidator(),$answer);
