@@ -37,7 +37,7 @@ class LaunchJob extends PipelineManagerAPICommand
         $pipelineParameters = $this->askEnterReleaseParameters($releaseParameters, $input, $output);
         
         $userId = (int) $this->askEnterUserId($input, $output);
-
+        
         $job = $api->jobs->runPipeline($pipeline->getId(), $userId, $release->getName(), $pipelineParameters);
 
         $output->writeln( "" );

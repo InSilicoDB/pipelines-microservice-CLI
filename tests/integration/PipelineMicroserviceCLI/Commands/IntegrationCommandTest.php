@@ -25,8 +25,10 @@ class IntegrationCommandTest extends IntegrationCommandTestCase
     public function testCanHideAPipeline()
     {
         $pipeline = $this->givenThereIsAPipeline();
+        //need to wait until releases are fetched because otherwise the publishing is overwritten
+        $pipeline = $this->whenAPipelineContainsReleases($pipeline);
         $pipeline = $this->whenAPipelineIsPublished($pipeline);
-        
+
         $commandOutput = $this->createCommandTester("pipeline:hide")
             ->withAnswersToCommandQuestions($pipeline->getId()."\n y \n")
             ->execute();
@@ -95,7 +97,7 @@ class IntegrationCommandTest extends IntegrationCommandTestCase
         $pipeline = $this->whenAPipelineReleaseContainsReleaseParameters($pipeline, $release);
         
         $commandOutput = $this->createCommandTester("job:launch")
-            ->withAnswersToCommandQuestions($pipeline->getId()."\n ".$release->getName()." \n \n \n \n /somepath/somefile.txt,/somepath/somefile.txt \n \n /somepath/somefile.txt,/somepath/somefile.txt \n \n \n \n \n \n \n \n \n 136 \n")
+            ->withAnswersToCommandQuestions($pipeline->getId()."\n ".$release->getName()." \n \n \n \n /somepath/somefile.txt;/somepath/somefile.txt \n \n /somepath/somefile.txt;/somepath/somefile.txt \n \n \n \n \n \n \n \n \n 136 \n")
             ->execute();
         
         $this->stringShouldMatchPattern($commandOutput, "/.*[\"']?status[\"']?\s?:\s?[\"']?scheduled[\"']?/");
