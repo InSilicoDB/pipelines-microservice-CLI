@@ -6,8 +6,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use PipelinesMicroserviceCLI\Commands\Traits\PipelineChooser;
 use PipelinesMicroserviceCLI\Commands\Traits\ReleaseChooser;
-use PipelinesMicroservice\Types\ReleaseParameter;
 use PipelinesMicroserviceCLI\QuestionValidators\Validators;
+use PipelinesMicroservice\Types\PipelineParameter;
 
 class LaunchJob extends PipelineManagerAPICommand
 {
@@ -33,8 +33,8 @@ class LaunchJob extends PipelineManagerAPICommand
         $approvedReleases = $pipeline->getApprovedReleases();
         $release = $this->askChooseRelease($approvedReleases, $input, $output);
         
-        $releaseParameters = $release->getParameters();
-        $pipelineParameters = $this->askEnterReleaseParameters($releaseParameters, $input, $output);
+        $pipelineParameters = $release->getParameters();
+        $pipelineParameters = $this->askEnterPipelineParameters($pipelineParameters, $input, $output);
         
         $userId = (int) $this->askEnterUserId($input, $output);
         
@@ -53,79 +53,79 @@ class LaunchJob extends PipelineManagerAPICommand
         return $helper->ask($input, $output, $question);
     }
     
-    private function askEnterReleaseParameters( array $releaseParameters, InputInterface $input, OutputInterface $output)
+    private function askEnterPipelineParameters( array $pipelineParameters, InputInterface $input, OutputInterface $output)
     {
         $formatter = $this->getHelper('formatter');
 
-        if (!empty($releaseParameters)) {
+        if (!empty($pipelineParameters)) {
             $formattedLine = $formatter->formatSection($this->parameterInputSection, "Please provide the parameters to run the pipeline:");
             $output->writeln( $formattedLine );
         }
-        $pipelineParameters = [];
+        $pipelineParametersToReturn = [];
         
-        foreach ($releaseParameters as $releaseParameter) {
-            $value = $this->askEnterReleaseParameter($releaseParameter, $input, $output);
-            if ( !$value && !$releaseParameter->isRequired() ) {
+        foreach ($pipelineParameters as $pipelineParameter) {
+            $value = $this->askEnterPipelineParameter($pipelineParameter, $input, $output);
+            if ( !$value && !$pipelineParameter->isRequired() ) {
                 continue;
             } else {
-                $pipelineParameters[$releaseParameter->getName()] = $value;
+                $pipelineParametersToReturn[$pipelineParameter->getName()] = $value;
             }
         }
-        return $pipelineParameters;
+        return $pipelineParametersToReturn;
     }
     
-    private function askEnterReleaseParameter( ReleaseParameter $releaseParameter, InputInterface $input, OutputInterface $output)
+    private function askEnterPipelineParameter( PipelineParameter $pipelineParameter, InputInterface $input, OutputInterface $output)
     {
         $helper = $this->getHelper('question');
         $formatter = $this->getHelper('formatter');
-        $formattedLine = $formatter->formatSection($this->parameterInputSection, "Parameter: ".$releaseParameter->getName()." - ".$releaseParameter->getDescription());
+        $formattedLine = $formatter->formatSection($this->parameterInputSection, "Parameter: ".$pipelineParameter->getName()." - ".$pipelineParameter->getDescription());
         $output->writeln($formattedLine);
-        $requiredText = $releaseParameter->isRequired() ? '<fg=red>REQUIRED</>':'<fg=green>NOT REQUIRED</>';
+        $requiredText = $pipelineParameter->isRequired() ? '<fg=red>REQUIRED</>':'<fg=green>NOT REQUIRED</>';
         $value = null;
         $formattedQuestionStr = null;
         $validator = null;
-        switch ($releaseParameter->getType()) {
-            case ReleaseParameter::TYPE_BOOLEAN:
+        switch ($pipelineParameter->getType()) {
+            case PipelineParameter::TYPE_BOOLEAN:
                 $formattedQuestionStr = $formatter->formatSection(
                     $this->parameterInputSection,
-                    "Please confirm if you want $requiredText ".$releaseParameter->getName()." (y,n,ENTER=ignore): "
+                    "Please confirm if you want $requiredText ".$pipelineParameter->getName()." (y,n,ENTER=ignore): "
                 );
                 return $this->askConfirmChoice($input, $output, $formattedQuestionStr, false);
             break;
-            case ReleaseParameter::TYPE_INT:
+            case PipelineParameter::TYPE_INT:
                 $formattedQuestionStr = $formatter->formatSection(
                     $this->parameterInputSection,
-                    "Please provide $requiredText ".$releaseParameter->getName().", which need to be a integer: "
+                    "Please provide $requiredText ".$pipelineParameter->getName().", which need to be a integer: "
                 );
-                $validator = Validators::integerValidator($releaseParameter->isRequired());
+                $validator = Validators::integerValidator($pipelineParameter->isRequired());
             break;
-            case ReleaseParameter::TYPE_DOUBLE:
+            case PipelineParameter::TYPE_DOUBLE:
                 $formattedQuestionStr = $formatter->formatSection(
                     $this->parameterInputSection,
-                    "Please provide $requiredText ".$releaseParameter->getName().", which need to be a double: "
+                    "Please provide $requiredText ".$pipelineParameter->getName().", which need to be a double: "
                 );
-                $validator = Validators::doubleValidator($releaseParameter->isRequired());
+                $validator = Validators::doubleValidator($pipelineParameter->isRequired());
             break;
-            case ReleaseParameter::TYPE_FILE:
+            case PipelineParameter::TYPE_FILE:
                 $formattedQuestionStr = $formatter->formatSection(
                     $this->parameterInputSection,
-                    "Please provide $requiredText ".$releaseParameter->getName().", which need to be a file: "
+                    "Please provide $requiredText ".$pipelineParameter->getName().", which need to be a file: "
                 );
-                $validator = Validators::fileValidator($releaseParameter->isRequired());
+                $validator = Validators::fileValidator($pipelineParameter->isRequired());
             break;
-            case ReleaseParameter::TYPE_FILES:
+            case PipelineParameter::TYPE_FILES:
                 $formattedQuestionStr = $formatter->formatSection(
                     $this->parameterInputSection,
-                    "Please provide $requiredText ".$releaseParameter->getName().", which need to be a comma separated files: "
+                    "Please provide $requiredText ".$pipelineParameter->getName().", which need to be a comma separated files: "
                 );
-                $validator = Validators::filesValidator($releaseParameter->isRequired());
+                $validator = Validators::filesValidator($pipelineParameter->isRequired());
             break;
-            case ReleaseParameter::TYPE_STRING:
+            case PipelineParameter::TYPE_STRING:
                 $formattedQuestionStr = $formatter->formatSection(
                     $this->parameterInputSection,
-                    "Please provide $requiredText ".$releaseParameter->getName().", which need to be a string: "
+                    "Please provide $requiredText ".$pipelineParameter->getName().", which need to be a string: "
                 );
-                $validator = Validators::stringValidator($releaseParameter->isRequired());
+                $validator = Validators::stringValidator($pipelineParameter->isRequired());
             break;
         }
         $question = new Question($formattedQuestionStr);

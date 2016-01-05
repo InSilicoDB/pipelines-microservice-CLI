@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 use PipelinesMicroservice\Hydrators\PipelineHydrator;
 use PipelinesMicroservice\PipelinesMicroserviceApi;
 use PipelinesMicroservice\Entities\Pipeline;
-use PipelinesMicroservice\Types\Release;
+use PipelinesMicroservice\Types\PipelineRelease;
 
 abstract class IntegrationCommandTestCase extends \PipelineMicroserviceCLITestCase
 {
@@ -43,7 +43,7 @@ abstract class IntegrationCommandTestCase extends \PipelineMicroserviceCLITestCa
         return $this->refreshPipelineUntilConditionFullfilled($pipeline, $closure);
     }
     
-    protected function whenAPipelineReleaseContainsReleaseParameters(Pipeline $pipeline, Release $release)
+    protected function whenAPipelineReleaseContainsReleaseParameters(Pipeline $pipeline, PipelineRelease $release)
     {
         $closure = function(Pipeline $pipeline) use ($release)
         {
@@ -79,7 +79,7 @@ abstract class IntegrationCommandTestCase extends \PipelineMicroserviceCLITestCa
         return new PipelinesMicroserviceApi($client);
     }
     
-    protected function whenAReleaseIsApproved(Pipeline $pipeline, Release $release)
+    protected function whenAReleaseIsApproved(Pipeline $pipeline, PipelineRelease $release)
     {
         return $this->api->pipelines->approveRelease($pipeline, $release);
     }
