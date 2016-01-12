@@ -4,17 +4,17 @@ namespace PipelinesMicroserviceCLI\Commands\Traits;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use PipelinesMicroservice\Types\Release;
+use PipelinesMicroservice\Types\PipelineRelease;
 
 trait ReleaseChooser
 {
     use Chooser;
     
     /**
-     * @param [Release] $releases
+     * @param [PipelineRelease] $releases
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return Release
+     * @return PipelineRelease
      */
     private function askChooseRelease($releases, InputInterface $input, OutputInterface $output)
     {

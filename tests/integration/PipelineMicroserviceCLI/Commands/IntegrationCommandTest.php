@@ -6,7 +6,6 @@ use GuzzleHttp\Client;
 use PipelinesMicroservice\Hydrators\PipelineHydrator;
 use PipelinesMicroservice\PipelinesMicroserviceApi;
 use PipelinesMicroservice\Entities\Pipeline;
-use PipelinesMicroservice\Types\Release;
 
 class IntegrationCommandTest extends IntegrationCommandTestCase
 {
